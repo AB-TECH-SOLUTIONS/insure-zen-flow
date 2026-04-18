@@ -8,10 +8,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Loader2, ShieldCheck } from "lucide-react";
 import type { AppRole } from "@/types/roles";
 import { ROLE_LABELS, ROLE_DESCRIPTIONS, ROLE_HOME } from "@/types/roles";
+import { PasswordInput } from "@/components/auth/PasswordInput";
+import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
+import { MagicLinkForm } from "@/components/auth/MagicLinkForm";
+import { PhoneOtpForm } from "@/components/auth/PhoneOtpForm";
 
 type Company = { id: string; name: string; code: string };
 

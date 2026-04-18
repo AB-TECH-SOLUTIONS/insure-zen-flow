@@ -16,7 +16,6 @@ import { ROLE_LABELS, ROLE_DESCRIPTIONS, ROLE_HOME } from "@/types/roles";
 import { PasswordInput } from "@/components/auth/PasswordInput";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { MagicLinkForm } from "@/components/auth/MagicLinkForm";
-import { PhoneOtpForm } from "@/components/auth/PhoneOtpForm";
 
 type Company = { id: string; name: string; code: string };
 
@@ -178,9 +177,8 @@ export default function Auth() {
                   </span>
                 </div>
                 <SocialAuthButtons />
-                <div className="mt-4 space-y-3">
+                <div className="mt-4">
                   <MagicLinkForm />
-                  <PhoneOtpForm />
                 </div>
               </TabsContent>
 

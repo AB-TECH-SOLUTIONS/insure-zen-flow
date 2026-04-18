@@ -177,9 +177,8 @@ export default function Auth() {
                   </span>
                 </div>
                 <SocialAuthButtons />
-                <div className="mt-4 space-y-3">
+                <div className="mt-4">
                   <MagicLinkForm />
-                  <PhoneOtpForm />
                 </div>
               </TabsContent>
 

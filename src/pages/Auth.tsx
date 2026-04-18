@@ -163,13 +163,25 @@ export default function Auth() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="login-pwd">Mot de passe</Label>
-                    <Input id="login-pwd" type="password" required value={loginPwd} onChange={(e) => setLoginPwd(e.target.value)} />
+                    <PasswordInput id="login-pwd" required value={loginPwd} onChange={(e) => setLoginPwd(e.target.value)} />
                   </div>
                   <Button type="submit" className="w-full" disabled={busy}>
                     {busy && <Loader2 className="h-4 w-4 animate-spin" />}
                     Se connecter
                   </Button>
                 </form>
+
+                <div className="relative my-6">
+                  <Separator />
+                  <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-card px-2 text-xs text-muted-foreground">
+                    ou en un clic
+                  </span>
+                </div>
+                <SocialAuthButtons />
+                <div className="mt-4 space-y-3">
+                  <MagicLinkForm />
+                  <PhoneOtpForm />
+                </div>
               </TabsContent>
 
               <TabsContent value="signup" className="mt-6">

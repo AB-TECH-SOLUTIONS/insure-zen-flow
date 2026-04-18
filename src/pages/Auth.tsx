@@ -8,10 +8,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Loader2, ShieldCheck } from "lucide-react";
 import type { AppRole } from "@/types/roles";
 import { ROLE_LABELS, ROLE_DESCRIPTIONS, ROLE_HOME } from "@/types/roles";
+import { PasswordInput } from "@/components/auth/PasswordInput";
+import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
+import { MagicLinkForm } from "@/components/auth/MagicLinkForm";
+import { PhoneOtpForm } from "@/components/auth/PhoneOtpForm";
 
 type Company = { id: string; name: string; code: string };
 
@@ -158,13 +163,25 @@ export default function Auth() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="login-pwd">Mot de passe</Label>
-                    <Input id="login-pwd" type="password" required value={loginPwd} onChange={(e) => setLoginPwd(e.target.value)} />
+                    <PasswordInput id="login-pwd" required value={loginPwd} onChange={(e) => setLoginPwd(e.target.value)} />
                   </div>
                   <Button type="submit" className="w-full" disabled={busy}>
                     {busy && <Loader2 className="h-4 w-4 animate-spin" />}
                     Se connecter
                   </Button>
                 </form>
+
+                <div className="relative my-6">
+                  <Separator />
+                  <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-card px-2 text-xs text-muted-foreground">
+                    ou en un clic
+                  </span>
+                </div>
+                <SocialAuthButtons />
+                <div className="mt-4 space-y-3">
+                  <MagicLinkForm />
+                  <PhoneOtpForm />
+                </div>
               </TabsContent>
 
               <TabsContent value="signup" className="mt-6">
@@ -185,7 +202,7 @@ export default function Auth() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="su-pwd">Mot de passe</Label>
-                    <Input id="su-pwd" type="password" required minLength={6} value={pwd} onChange={(e) => setPwd(e.target.value)} />
+                    <PasswordInput id="su-pwd" required minLength={6} value={pwd} onChange={(e) => setPwd(e.target.value)} />
                   </div>
 
                   <div className="space-y-2">
@@ -225,6 +242,18 @@ export default function Auth() {
                     Créer mon compte
                   </Button>
                 </form>
+
+                <div className="relative my-6">
+                  <Separator />
+                  <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-card px-2 text-xs text-muted-foreground">
+                    ou inscription rapide
+                  </span>
+                </div>
+                <SocialAuthButtons />
+                <p className="text-xs text-muted-foreground mt-3 text-center">
+                  Avec Google/Apple, le rôle <strong>client</strong> est attribué par défaut.
+                  Vous pourrez demander un autre rôle depuis votre espace.
+                </p>
               </TabsContent>
             </Tabs>
           </CardContent>

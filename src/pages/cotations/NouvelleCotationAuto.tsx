@@ -118,7 +118,7 @@ export default function NouvelleCotationAuto() {
     <div className="space-y-6">
       <PageHeader
         title="Nouvelle cotation Auto"
-        subtitle="Calcul automatique unifié — NSIA / GMC / AFRI. Mode manuel disponible."
+        description="Calcul automatique unifié — NSIA / GMC / AFRI. Mode manuel disponible."
       />
 
       <Card className="p-6 space-y-4">

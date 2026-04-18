@@ -18,6 +18,8 @@ import AssureurDashboard from "./pages/dashboards/AssureurDashboard";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 
 import { PlaceholderPage } from "./components/PlaceholderPage";
+import NouvelleCotationAuto from "./pages/cotations/NouvelleCotationAuto";
+import ListeCotations from "./pages/cotations/ListeCotations";
 
 const queryClient = new QueryClient();
 
@@ -39,8 +41,9 @@ const App = () => (
             {/* CLIENT */}
             <Route element={<ProtectedRoute allow={["client", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/client" element={<ClientDashboard />} />
-              <Route path="/client/cotations" element={<Stub title="Mes cotations" sprint="Sprint 1" />} />
-              <Route path="/client/cotations/nouvelle" element={<Stub title="Nouvelle cotation" description="Choisissez le type d'assurance : auto, voyage ou risques divers." sprint="Sprint 1" />} />
+              <Route path="/client/cotations" element={<ListeCotations basePath="/client" />} />
+              <Route path="/client/cotations/nouvelle/auto" element={<NouvelleCotationAuto />} />
+              <Route path="/client/cotations/nouvelle" element={<Stub title="Nouvelle cotation" description="Choisissez Auto, Voyage ou Risques Divers." sprint="Sprint 1" />} />
               <Route path="/client/contrats" element={<Stub title="Mes contrats" sprint="Sprint 2" />} />
               <Route path="/client/sinistres" element={<Stub title="Mes sinistres" sprint="Sprint 4" />} />
               <Route path="/client/paiements" element={<Stub title="Paiements" sprint="Sprint 5" />} />
@@ -50,7 +53,9 @@ const App = () => (
             {/* AGENT */}
             <Route element={<ProtectedRoute allow={["agent", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/agent" element={<AgentDashboard />} />
-              <Route path="/agent/cotations" element={<Stub title="Cotations" sprint="Sprint 1" />} />
+              <Route path="/agent/cotations" element={<ListeCotations basePath="/agent" />} />
+              <Route path="/agent/quotes" element={<ListeCotations basePath="/agent" />} />
+              <Route path="/agent/cotations/nouvelle/auto" element={<NouvelleCotationAuto />} />
               <Route path="/agent/cotations/nouvelle" element={<Stub title="Nouvelle cotation" description="Auto, Voyage ou Risques Divers." sprint="Sprint 1" />} />
               <Route path="/agent/contrats" element={<Stub title="Contrats" sprint="Sprint 2" />} />
               <Route path="/agent/clients" element={<Stub title="Clients" sprint="Sprint 1" />} />
@@ -64,11 +69,12 @@ const App = () => (
             {/* COURTIER */}
             <Route element={<ProtectedRoute allow={["courtier", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/courtier" element={<CourtierDashboard />} />
-              <Route path="/courtier/cotations" element={<Stub title="Cotations" sprint="Sprint 1" />} />
+              <Route path="/courtier/cotations" element={<ListeCotations basePath="/courtier" />} />
+              <Route path="/courtier/cotations/nouvelle/auto" element={<NouvelleCotationAuto />} />
               <Route path="/courtier/cotations/nouvelle" element={<Stub title="Nouvelle cotation" sprint="Sprint 1" />} />
               <Route path="/courtier/contrats" element={<Stub title="Contrats" sprint="Sprint 2" />} />
               <Route path="/courtier/clients" element={<Stub title="Clients" sprint="Sprint 1" />} />
-              <Route path="/courtier/compagnies" element={<Stub title="Mes accès compagnies" description="Demandez l'accès aux tarifs et templates des compagnies." sprint="Sprint 2" />} />
+              <Route path="/courtier/compagnies" element={<Stub title="Mes accès compagnies" sprint="Sprint 2" />} />
               <Route path="/courtier/sinistres" element={<Stub title="Sinistres" sprint="Sprint 4" />} />
               <Route path="/courtier/paiements" element={<Stub title="Paiements" sprint="Sprint 5" />} />
               <Route path="/courtier/messages" element={<Stub title="Messagerie" sprint="Sprint 3" />} />
@@ -78,7 +84,8 @@ const App = () => (
             <Route element={<ProtectedRoute allow={["assureur", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/assureur" element={<AssureurDashboard />} />
               <Route path="/assureur/portefeuille" element={<Stub title="Portefeuille" sprint="Sprint 2" />} />
-              <Route path="/assureur/cotations" element={<Stub title="Cotations" sprint="Sprint 1" />} />
+              <Route path="/assureur/cotations" element={<ListeCotations basePath="/assureur" />} />
+              <Route path="/assureur/cotations/nouvelle/auto" element={<NouvelleCotationAuto />} />
               <Route path="/assureur/cotations/nouvelle" element={<Stub title="Nouvelle cotation" sprint="Sprint 1" />} />
               <Route path="/assureur/contrats" element={<Stub title="Contrats" sprint="Sprint 2" />} />
               <Route path="/assureur/reseau" element={<Stub title="Réseau" sprint="Sprint 2" />} />
@@ -95,7 +102,8 @@ const App = () => (
               <Route path="/admin/compagnies" element={<Stub title="Compagnies" sprint="Sprint 2" />} />
               <Route path="/admin/utilisateurs" element={<Stub title="Utilisateurs" sprint="Sprint 2" />} />
               <Route path="/admin/roles" element={<Stub title="Rôles & accès" sprint="Sprint 2" />} />
-              <Route path="/admin/cotations" element={<Stub title="Toutes les cotations" sprint="Sprint 1" />} />
+              <Route path="/admin/cotations" element={<ListeCotations basePath="/admin" />} />
+              <Route path="/admin/cotations/nouvelle/auto" element={<NouvelleCotationAuto />} />
               <Route path="/admin/contrats" element={<Stub title="Tous les contrats" sprint="Sprint 2" />} />
               <Route path="/admin/sinistres" element={<Stub title="Tous les sinistres" sprint="Sprint 4" />} />
               <Route path="/admin/logs" element={<Stub title="Journaux" sprint="Sprint 5" />} />

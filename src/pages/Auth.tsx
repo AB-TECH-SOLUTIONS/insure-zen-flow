@@ -202,7 +202,7 @@ export default function Auth() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="su-pwd">Mot de passe</Label>
-                    <Input id="su-pwd" type="password" required minLength={6} value={pwd} onChange={(e) => setPwd(e.target.value)} />
+                    <PasswordInput id="su-pwd" required minLength={6} value={pwd} onChange={(e) => setPwd(e.target.value)} />
                   </div>
 
                   <div className="space-y-2">

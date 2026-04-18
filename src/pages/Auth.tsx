@@ -242,6 +242,18 @@ export default function Auth() {
                     Créer mon compte
                   </Button>
                 </form>
+
+                <div className="relative my-6">
+                  <Separator />
+                  <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-card px-2 text-xs text-muted-foreground">
+                    ou inscription rapide
+                  </span>
+                </div>
+                <SocialAuthButtons />
+                <p className="text-xs text-muted-foreground mt-3 text-center">
+                  Avec Google/Apple, le rôle <strong>client</strong> est attribué par défaut.
+                  Vous pourrez demander un autre rôle depuis votre espace.
+                </p>
               </TabsContent>
             </Tabs>
           </CardContent>

@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ClientSelector, type ClientLite } from "@/components/clients/ClientSelector";
+import { ensureClient } from "@/lib/clients";
 import { formatFCFA } from "@/lib/format";
 import {
   coterVoyage,
@@ -33,13 +35,12 @@ const initialInput: VoyageInput = {
   sportsHiver: false,
 };
 
-export default function NouvelleCotationVoyage() {
+export default function NouvelleCotationVoyage({ basePath = "/agent" }: { basePath?: string } = {}) {
   const navigate = useNavigate();
   const { user, primaryCompanyId, role } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState("");
-  const [clientName, setClientName] = useState("");
-  const [clientPhone, setClientPhone] = useState("");
+  const [client, setClient] = useState<ClientLite | null>({ full_name: "", phone: "" });
   const [input, setInput] = useState<VoyageInput>(initialInput);
   const [overrides, setOverrides] = useState<VoyageOverrides>(defaultVoyageOverrides());
   const [saving, setSaving] = useState(false);
@@ -67,34 +68,32 @@ export default function NouvelleCotationVoyage() {
 
   const save = async () => {
     if (!user || !companyId) return toast.error("Sélectionnez une compagnie");
-    if (!clientName.trim()) return toast.error("Renseignez le nom du client");
+    if (!client || !client.full_name.trim()) return toast.error("Sélectionnez ou renseignez un client");
     setSaving(true);
-    const { data: client, error: cErr } = await supabase
-      .from("clients")
-      .insert({ full_name: clientName, phone: clientPhone || null, company_id: companyId, owner_user_id: user.id })
-      .select("id").single();
-    if (cErr || !client) {
+    try {
+      const clientId = await ensureClient(client, companyId, user.id);
+      const { data: quote, error: qErr } = await supabase.from("quotes").insert({
+        company_id: companyId,
+        client_id: clientId,
+        type: "voyage",
+        created_by: user.id,
+        manual_mode: overrides.manualMode,
+        manual_overrides: overrides.lines as never,
+        payload: input as never,
+        breakdown: result as never,
+        base_premium: result.primeNette,
+        taxes: result.tva,
+        total_premium: result.primeTTC,
+        duration_days: input.jours,
+      }).select("id").single();
+      if (qErr || !quote) throw new Error(qErr?.message ?? "Erreur");
+      toast.success("Cotation Voyage enregistrée");
+      navigate(`${basePath}/cotations/${quote.id}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur");
+    } finally {
       setSaving(false);
-      return toast.error(cErr?.message ?? "Erreur création client");
     }
-    const { error: qErr } = await supabase.from("quotes").insert({
-      company_id: companyId,
-      client_id: client.id,
-      type: "voyage",
-      created_by: user.id,
-      manual_mode: overrides.manualMode,
-      manual_overrides: overrides.lines as never,
-      payload: input as never,
-      breakdown: result as never,
-      base_premium: result.primeNette,
-      taxes: result.tva,
-      total_premium: result.primeTTC,
-      duration_days: input.jours,
-    });
-    setSaving(false);
-    if (qErr) return toast.error(qErr.message);
-    toast.success("Cotation Voyage enregistrée");
-    navigate(`${home}/cotations`);
   };
 
   return (
@@ -102,8 +101,8 @@ export default function NouvelleCotationVoyage() {
       <PageHeader title="Nouvelle cotation Voyage" description="Schengen, Europe, Monde — barème NSIA par âge × produit × durée." />
 
       <Card className="p-6 space-y-4">
-        <h3 className="font-display text-lg font-semibold">Compagnie & Client</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <h3 className="font-display text-lg font-semibold">Compagnie</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Compagnie</Label>
             <Select value={companyId} onValueChange={setCompanyId}>
@@ -113,16 +112,10 @@ export default function NouvelleCotationVoyage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label>Nom du client</Label>
-            <Input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Ex : MBONGO Samuel" />
-          </div>
-          <div className="space-y-2">
-            <Label>Téléphone</Label>
-            <Input value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="+237…" />
-          </div>
         </div>
       </Card>
+
+      <ClientSelector companyId={companyId} value={client} onChange={setClient} />
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
         <Card className="p-6 space-y-4">

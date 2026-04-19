@@ -54,7 +54,11 @@ export default function ListeCotations({ basePath }: { basePath: string }) {
           </div>
         )}
         {quotes.map((q) => (
-          <div key={q.id} className="flex items-center justify-between p-4 hover:bg-muted/30">
+          <Link
+            key={q.id}
+            to={`${basePath}/cotations/${q.id}`}
+            className="flex items-center justify-between p-4 hover:bg-muted/30 transition"
+          >
             <div>
               <div className="font-medium">{q.reference}</div>
               <div className="text-xs text-muted-foreground">
@@ -67,7 +71,7 @@ export default function ListeCotations({ basePath }: { basePath: string }) {
                 {q.total_premium ? formatFCFA(q.total_premium) : "—"}
               </span>
             </div>
-          </div>
+          </Link>
         ))}
       </Card>
     </div>

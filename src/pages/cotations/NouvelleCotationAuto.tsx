@@ -5,14 +5,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { VehiculeForm } from "@/components/cotation/VehiculeForm";
 import { DecomptePanel } from "@/components/cotation/DecomptePanel";
+import { ClientSelector, type ClientLite } from "@/components/clients/ClientSelector";
+import { ensureClient } from "@/lib/clients";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { coter, defaultOverrides, type AutoInput, type AutoOverrides } from "@/lib/tarifs/moteurAuto";
 import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
+
+interface Props { basePath: string }
 
 type Company = { id: string; name: string; code: string };
 
@@ -52,13 +55,12 @@ const initialInput: AutoInput = {
   dureeMois: 12,
 };
 
-export default function NouvelleCotationAuto() {
+export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Props> = {}) {
   const navigate = useNavigate();
   const { user, primaryCompanyId } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
-  const [clientName, setClientName] = useState("");
-  const [clientPhone, setClientPhone] = useState("");
+  const [client, setClient] = useState<ClientLite | null>({ full_name: "", phone: "" });
   const [input, setInput] = useState<AutoInput>(initialInput);
   const [overrides, setOverrides] = useState<AutoOverrides>(defaultOverrides());
   const [saving, setSaving] = useState(false);
@@ -84,49 +86,35 @@ export default function NouvelleCotationAuto() {
       toast.error("Sélectionnez une compagnie");
       return;
     }
-    if (!clientName.trim()) {
-      toast.error("Renseignez le nom du client");
+    if (!client || !client.full_name.trim()) {
+      toast.error("Sélectionnez ou renseignez un client");
       return;
     }
     setSaving(true);
-    // 1. créer/réutiliser un client minimal
-    const { data: client, error: cErr } = await supabase
-      .from("clients")
-      .insert({
-        full_name: clientName,
-        phone: clientPhone || null,
+    try {
+      const clientId = await ensureClient(client, companyId, user.id);
+      const { data: quote, error: qErr } = await supabase.from("quotes").insert({
         company_id: companyId,
-        owner_user_id: user.id,
-      })
-      .select("id")
-      .single();
-    if (cErr || !client) {
+        client_id: clientId,
+        type: "auto",
+        created_by: user.id,
+        manual_mode: overrides.manualMode,
+        manual_overrides: overrides.lines as never,
+        payload: input as never,
+        breakdown: result as never,
+        base_premium: result.primeNetteApresReduction,
+        taxes: result.tva,
+        total_premium: result.primeTTC,
+        duration_days: input.dureeMois * 30,
+      }).select("id").single();
+      if (qErr || !quote) throw new Error(qErr?.message ?? "Erreur");
+      toast.success("Cotation enregistrée");
+      navigate(`${basePath}/cotations/${quote.id}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur");
+    } finally {
       setSaving(false);
-      toast.error(cErr?.message ?? "Erreur création client");
-      return;
     }
-    // 2. créer la cotation
-    const { error: qErr } = await supabase.from("quotes").insert({
-      company_id: companyId,
-      client_id: client.id,
-      type: "auto",
-      created_by: user.id,
-      manual_mode: overrides.manualMode,
-      manual_overrides: overrides.lines as never,
-      payload: input as never,
-      breakdown: result as never,
-      base_premium: result.primeNetteApresReduction,
-      taxes: result.tva,
-      total_premium: result.primeTTC,
-      duration_days: input.dureeMois * 30,
-    });
-    setSaving(false);
-    if (qErr) {
-      toast.error(qErr.message);
-      return;
-    }
-    toast.success("Cotation enregistrée");
-    navigate("/agent/quotes");
   };
 
   return (
@@ -137,8 +125,8 @@ export default function NouvelleCotationAuto() {
       />
 
       <Card className="p-6 space-y-4">
-        <h3 className="font-display text-lg font-semibold">Compagnie & Client</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <h3 className="font-display text-lg font-semibold">Compagnie</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Compagnie</Label>
             <Select value={companyId} onValueChange={setCompanyId}>
@@ -150,16 +138,10 @@ export default function NouvelleCotationAuto() {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label>Nom du client</Label>
-            <Input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Ex : MBONGO Samuel" />
-          </div>
-          <div className="space-y-2">
-            <Label>Téléphone</Label>
-            <Input value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="+237…" />
-          </div>
         </div>
       </Card>
+
+      <ClientSelector companyId={companyId} value={client} onChange={setClient} />
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
         <VehiculeForm value={input} onChange={setInput} />

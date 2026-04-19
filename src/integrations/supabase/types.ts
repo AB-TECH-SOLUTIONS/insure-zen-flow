@@ -311,6 +311,44 @@ export type Database = {
         }
         Relationships: []
       }
+      contract_sequences: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          last_number: number
+          product_type: Database["public"]["Enums"]["quote_type"]
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          last_number?: number
+          product_type: Database["public"]["Enums"]["quote_type"]
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          last_number?: number
+          product_type?: Database["public"]["Enums"]["quote_type"]
+          updated_at?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_sequences_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contracts: {
         Row: {
           attestation_number: string | null
@@ -762,6 +800,13 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      next_contract_number: {
+        Args: {
+          _company_id: string
+          _product: Database["public"]["Enums"]["quote_type"]
+        }
+        Returns: string
       }
     }
     Enums: {

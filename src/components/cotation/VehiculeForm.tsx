@@ -61,6 +61,16 @@ export function VehiculeForm({ value, onChange }: Props) {
             <Input type="number" min={1} value={value.cv} onChange={(e) => set("cv", parseInt(e.target.value || "0", 10))} />
           </div>
           <div className="space-y-2">
+            <Label>Énergie</Label>
+            <Select value={value.energie} onValueChange={(v) => set("energie", v as "essence" | "diesel")}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="essence">Essence</SelectItem>
+                <SelectItem value="diesel">Diesel</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
             <Label>Nombre de places</Label>
             <Input type="number" min={1} value={value.places} onChange={(e) => set("places", parseInt(e.target.value || "0", 10))} />
           </div>

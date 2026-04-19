@@ -45,7 +45,8 @@ const App = () => (
               <Route path="/client" element={<ClientDashboard />} />
               <Route path="/client/cotations" element={<ListeCotations basePath="/client" />} />
               <Route path="/client/cotations/nouvelle/auto" element={<NouvelleCotationAuto />} />
-              <Route path="/client/cotations/nouvelle" element={<Stub title="Nouvelle cotation" description="Choisissez Auto, Voyage ou Risques Divers." sprint="Sprint 1" />} />
+              <Route path="/client/cotations/nouvelle/voyage" element={<NouvelleCotationVoyage />} />
+              <Route path="/client/cotations/nouvelle" element={<SelecteurProduit basePath="/client" />} />
               <Route path="/client/contrats" element={<Stub title="Mes contrats" sprint="Sprint 2" />} />
               <Route path="/client/sinistres" element={<Stub title="Mes sinistres" sprint="Sprint 4" />} />
               <Route path="/client/paiements" element={<Stub title="Paiements" sprint="Sprint 5" />} />
@@ -58,7 +59,8 @@ const App = () => (
               <Route path="/agent/cotations" element={<ListeCotations basePath="/agent" />} />
               <Route path="/agent/quotes" element={<ListeCotations basePath="/agent" />} />
               <Route path="/agent/cotations/nouvelle/auto" element={<NouvelleCotationAuto />} />
-              <Route path="/agent/cotations/nouvelle" element={<Stub title="Nouvelle cotation" description="Auto, Voyage ou Risques Divers." sprint="Sprint 1" />} />
+              <Route path="/agent/cotations/nouvelle/voyage" element={<NouvelleCotationVoyage />} />
+              <Route path="/agent/cotations/nouvelle" element={<SelecteurProduit basePath="/agent" />} />
               <Route path="/agent/contrats" element={<Stub title="Contrats" sprint="Sprint 2" />} />
               <Route path="/agent/clients" element={<Stub title="Clients" sprint="Sprint 1" />} />
               <Route path="/agent/vehicules" element={<Stub title="Véhicules" sprint="Sprint 1" />} />
@@ -73,7 +75,8 @@ const App = () => (
               <Route path="/courtier" element={<CourtierDashboard />} />
               <Route path="/courtier/cotations" element={<ListeCotations basePath="/courtier" />} />
               <Route path="/courtier/cotations/nouvelle/auto" element={<NouvelleCotationAuto />} />
-              <Route path="/courtier/cotations/nouvelle" element={<Stub title="Nouvelle cotation" sprint="Sprint 1" />} />
+              <Route path="/courtier/cotations/nouvelle/voyage" element={<NouvelleCotationVoyage />} />
+              <Route path="/courtier/cotations/nouvelle" element={<SelecteurProduit basePath="/courtier" />} />
               <Route path="/courtier/contrats" element={<Stub title="Contrats" sprint="Sprint 2" />} />
               <Route path="/courtier/clients" element={<Stub title="Clients" sprint="Sprint 1" />} />
               <Route path="/courtier/compagnies" element={<Stub title="Mes accès compagnies" sprint="Sprint 2" />} />
@@ -88,7 +91,8 @@ const App = () => (
               <Route path="/assureur/portefeuille" element={<Stub title="Portefeuille" sprint="Sprint 2" />} />
               <Route path="/assureur/cotations" element={<ListeCotations basePath="/assureur" />} />
               <Route path="/assureur/cotations/nouvelle/auto" element={<NouvelleCotationAuto />} />
-              <Route path="/assureur/cotations/nouvelle" element={<Stub title="Nouvelle cotation" sprint="Sprint 1" />} />
+              <Route path="/assureur/cotations/nouvelle/voyage" element={<NouvelleCotationVoyage />} />
+              <Route path="/assureur/cotations/nouvelle" element={<SelecteurProduit basePath="/assureur" />} />
               <Route path="/assureur/contrats" element={<Stub title="Contrats" sprint="Sprint 2" />} />
               <Route path="/assureur/reseau" element={<Stub title="Réseau" sprint="Sprint 2" />} />
               <Route path="/assureur/demandes-courtiers" element={<Stub title="Demandes courtiers" sprint="Sprint 2" />} />
@@ -106,6 +110,8 @@ const App = () => (
               <Route path="/admin/roles" element={<Stub title="Rôles & accès" sprint="Sprint 2" />} />
               <Route path="/admin/cotations" element={<ListeCotations basePath="/admin" />} />
               <Route path="/admin/cotations/nouvelle/auto" element={<NouvelleCotationAuto />} />
+              <Route path="/admin/cotations/nouvelle/voyage" element={<NouvelleCotationVoyage />} />
+              <Route path="/admin/cotations/nouvelle" element={<SelecteurProduit basePath="/admin" />} />
               <Route path="/admin/contrats" element={<Stub title="Tous les contrats" sprint="Sprint 2" />} />
               <Route path="/admin/sinistres" element={<Stub title="Tous les sinistres" sprint="Sprint 4" />} />
               <Route path="/admin/logs" element={<Stub title="Journaux" sprint="Sprint 5" />} />

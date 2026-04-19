@@ -55,13 +55,12 @@ const initialInput: AutoInput = {
   dureeMois: 12,
 };
 
-export default function NouvelleCotationAuto() {
+export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Props> = {}) {
   const navigate = useNavigate();
   const { user, primaryCompanyId } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
-  const [clientName, setClientName] = useState("");
-  const [clientPhone, setClientPhone] = useState("");
+  const [client, setClient] = useState<ClientLite | null>({ full_name: "", phone: "" });
   const [input, setInput] = useState<AutoInput>(initialInput);
   const [overrides, setOverrides] = useState<AutoOverrides>(defaultOverrides());
   const [saving, setSaving] = useState(false);

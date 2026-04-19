@@ -17,12 +17,18 @@ import {
   calculerAccessoires,
   REDUCTION_RC_MAX,
 } from "./auto";
+import { calculerRcGmc, calculerDtaGmc, rcGmcDisponible, GMC_TAUX, type GmcEnergie } from "./gmc";
+
+export type CompagnieCode = "NSIA" | "AFRI" | "GMC" | "AUTRE";
 
 export interface AutoInput {
+  // Compagnie (détermine le barème appliqué)
+  compagnie: CompagnieCode;
   // Véhicule
   categorie: Categorie;
   cv: number;
   zone: Zone;
+  energie: GmcEnergie;
   places: number;
   chargeUtileKg: number;
   valeurNeuve: number;

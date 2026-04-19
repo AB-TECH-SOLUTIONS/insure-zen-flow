@@ -17,12 +17,18 @@ import {
   calculerAccessoires,
   REDUCTION_RC_MAX,
 } from "./auto";
+import { calculerRcGmc, calculerDtaGmc, rcGmcDisponible, GMC_TAUX, type GmcEnergie } from "./gmc";
+
+export type CompagnieCode = "NSIA" | "AFRI" | "GMC" | "AUTRE";
 
 export interface AutoInput {
+  // Compagnie (détermine le barème appliqué)
+  compagnie: CompagnieCode;
   // Véhicule
   categorie: Categorie;
   cv: number;
   zone: Zone;
+  energie: GmcEnergie;
   places: number;
   chargeUtileKg: number;
   valeurNeuve: number;
@@ -90,25 +96,35 @@ function coefDuree(mois: number): number {
 }
 
 export function coter(input: AutoInput, overrides: AutoOverrides): AutoCotationResult {
+  const isGmc = input.compagnie === "GMC" && rcGmcDisponible(input.categorie);
+  const useGmcTaux = input.compagnie === "GMC" && (input.categorie === "cat1" || input.categorie === "cat2");
   const garanties = GARANTIES_PAR_CATEGORIE[input.categorie];
-  const tauxDommages = TAUX_DOMMAGES[input.categorie];
+  const tauxDommages = useGmcTaux ? GMC_TAUX.dommages : TAUX_DOMMAGES[input.categorie];
   const coef = coefDuree(input.dureeMois);
 
-  // ---- calculs auto (peuvent être overridés ligne par ligne) ----
   const auto: Record<string, number> = {};
 
-  auto.rc = Math.round(calculerRC(input) * coef);
+  if (isGmc) {
+    auto.rc = calculerRcGmc({
+      categorie: input.categorie as "cat1" | "cat2",
+      cv: input.cv,
+      energie: input.energie,
+      dureeMois: input.dureeMois,
+    });
+  } else {
+    auto.rc = Math.round(calculerRC(input) * coef);
+  }
   auto.dr = input.garanties.defenseRecours ? TAUX_DEFENSE_RECOURS : 0;
   auto.dommages = input.garanties.dommages ? Math.round(input.valeurVenale * tauxDommages * coef) : 0;
-  auto.brisDeGlaces = input.garanties.brisDeGlaces ? Math.round(input.valeurNeuve * garanties.brisDeGlaces * coef) : 0;
-  auto.incendie = input.garanties.incendie ? Math.round(input.valeurVenale * garanties.incendie * coef) : 0;
-  auto.volSimple = input.garanties.volSimple ? Math.round(input.valeurVenale * garanties.volSimple * coef) : 0;
-  auto.volBraquage = input.garanties.volBraquage ? Math.round(input.valeurVenale * garanties.volBraquage * coef) : 0;
-  auto.tierceCollision = input.garanties.tierceCollision ? Math.round(input.valeurVenale * garanties.tierceCollision * coef) : 0;
+  auto.brisDeGlaces = input.garanties.brisDeGlaces ? Math.round(input.valeurNeuve * (useGmcTaux ? GMC_TAUX.brisDeGlaces : garanties.brisDeGlaces) * coef) : 0;
+  auto.incendie = input.garanties.incendie ? Math.round(input.valeurVenale * (useGmcTaux ? GMC_TAUX.incendie : garanties.incendie) * coef) : 0;
+  auto.volSimple = input.garanties.volSimple ? Math.round(input.valeurVenale * (useGmcTaux ? GMC_TAUX.volSimple : garanties.volSimple) * coef) : 0;
+  auto.volBraquage = input.garanties.volBraquage ? Math.round(input.valeurVenale * (useGmcTaux ? GMC_TAUX.volBraquage : garanties.volBraquage) * coef) : 0;
+  auto.tierceCollision = input.garanties.tierceCollision ? Math.round(input.valeurVenale * (useGmcTaux ? GMC_TAUX.tierceCollision : garanties.tierceCollision) * coef) : 0;
 
   if (input.garanties.ipt) {
     const option = OPTIONS_IPT.find((o) => o.code === (input.garanties.iptOption ?? "I"))!;
-    auto.ipt = option.primeParPlace * input.places; // non proratisé
+    auto.ipt = option.primeParPlace * input.places;
   } else {
     auto.ipt = 0;
   }
@@ -166,7 +182,7 @@ export function coter(input: AutoInput, overrides: AutoOverrides): AutoCotationR
       : CARTE_ROSE_CEMAC
     : 0;
 
-  const dtaAuto = calculerDTA(input.categorie, input.cv, input.zone);
+  const dtaAuto = isGmc ? calculerDtaGmc(input.cv) : calculerDTA(input.categorie, input.cv, input.zone);
   const dta = overrides.lines.dta !== undefined ? overrides.lines.dta! : dtaAuto;
 
   // TVA s'applique sur prime nette + accessoires (page 12 NSIA)

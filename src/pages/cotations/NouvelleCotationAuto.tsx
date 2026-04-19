@@ -16,10 +16,20 @@ import { Loader2, Save } from "lucide-react";
 
 type Company = { id: string; name: string; code: string };
 
+function detectCompagnie(code: string): "NSIA" | "AFRI" | "GMC" | "AUTRE" {
+  const c = code.toUpperCase();
+  if (c.includes("NSIA")) return "NSIA";
+  if (c.includes("AFRI")) return "AFRI";
+  if (c.includes("GMC")) return "GMC";
+  return "AUTRE";
+}
+
 const initialInput: AutoInput = {
+  compagnie: "NSIA",
   categorie: "cat1",
   cv: 7,
   zone: "A",
+  energie: "essence",
   places: 5,
   chargeUtileKg: 0,
   valeurNeuve: 8_000_000,
@@ -61,6 +71,11 @@ export default function NouvelleCotationAuto() {
       else if (list[0]) setCompanyId(list[0].id);
     });
   }, [primaryCompanyId]);
+
+  useEffect(() => {
+    const c = companies.find((x) => x.id === companyId);
+    if (c) setInput((prev) => ({ ...prev, compagnie: detectCompagnie(c.code) }));
+  }, [companyId, companies]);
 
   const result = useMemo(() => coter(input, overrides), [input, overrides]);
 

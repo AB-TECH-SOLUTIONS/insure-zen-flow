@@ -182,7 +182,7 @@ export function coter(input: AutoInput, overrides: AutoOverrides): AutoCotationR
       : CARTE_ROSE_CEMAC
     : 0;
 
-  const dtaAuto = calculerDTA(input.categorie, input.cv, input.zone);
+  const dtaAuto = isGmc ? calculerDtaGmc(input.cv) : calculerDTA(input.categorie, input.cv, input.zone);
   const dta = overrides.lines.dta !== undefined ? overrides.lines.dta! : dtaAuto;
 
   // TVA s'applique sur prime nette + accessoires (page 12 NSIA)

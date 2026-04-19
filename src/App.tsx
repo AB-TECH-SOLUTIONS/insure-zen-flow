@@ -19,6 +19,8 @@ import AdminDashboard from "./pages/dashboards/AdminDashboard";
 
 import { PlaceholderPage } from "./components/PlaceholderPage";
 import NouvelleCotationAuto from "./pages/cotations/NouvelleCotationAuto";
+import NouvelleCotationVoyage from "./pages/cotations/NouvelleCotationVoyage";
+import SelecteurProduit from "./pages/cotations/SelecteurProduit";
 import ListeCotations from "./pages/cotations/ListeCotations";
 
 const queryClient = new QueryClient();

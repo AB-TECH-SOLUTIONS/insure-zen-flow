@@ -5,14 +5,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { VehiculeForm } from "@/components/cotation/VehiculeForm";
 import { DecomptePanel } from "@/components/cotation/DecomptePanel";
+import { ClientSelector, type ClientLite } from "@/components/clients/ClientSelector";
+import { ensureClient } from "@/lib/clients";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { coter, defaultOverrides, type AutoInput, type AutoOverrides } from "@/lib/tarifs/moteurAuto";
 import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
+
+interface Props { basePath: string }
 
 type Company = { id: string; name: string; code: string };
 

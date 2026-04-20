@@ -25,6 +25,7 @@ import ListeCotations from "./pages/cotations/ListeCotations";
 import DetailCotation from "./pages/cotations/DetailCotation";
 import ListeContrats from "./pages/contrats/ListeContrats";
 import DetailContrat from "./pages/contrats/DetailContrat";
+import ListePaiements from "./pages/paiements/ListePaiements";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const RoleRoutes = ({ base }: { base: string }) => (
     <Route path={`${base}/cotations/:id`} element={<DetailCotation basePath={base} />} />
     <Route path={`${base}/contrats`} element={<ListeContrats basePath={base} />} />
     <Route path={`${base}/contrats/:id`} element={<DetailContrat basePath={base} />} />
+    <Route path={`${base}/paiements`} element={<ListePaiements />} />
   </>
 );
 
@@ -61,7 +63,6 @@ const App = () => (
               <Route path="/client" element={<ClientDashboard />} />
               {RoleRoutes({ base: "/client" })}
               <Route path="/client/sinistres" element={<Stub title="Mes sinistres" sprint="Sprint 4" />} />
-              <Route path="/client/paiements" element={<Stub title="Paiements" sprint="Sprint 5" />} />
               <Route path="/client/messages" element={<Stub title="Messagerie" sprint="Sprint 3" />} />
             </Route>
 
@@ -73,7 +74,6 @@ const App = () => (
               <Route path="/agent/clients" element={<Stub title="Clients" sprint="Sprint 1" />} />
               <Route path="/agent/vehicules" element={<Stub title="Véhicules" sprint="Sprint 1" />} />
               <Route path="/agent/sinistres" element={<Stub title="Sinistres" sprint="Sprint 4" />} />
-              <Route path="/agent/paiements" element={<Stub title="Paiements" sprint="Sprint 5" />} />
               <Route path="/agent/attestations" element={<Stub title="Stock attestations" sprint="Sprint 3" />} />
               <Route path="/agent/messages" element={<Stub title="Messagerie" sprint="Sprint 3" />} />
             </Route>
@@ -85,7 +85,6 @@ const App = () => (
               <Route path="/courtier/clients" element={<Stub title="Clients" sprint="Sprint 1" />} />
               <Route path="/courtier/compagnies" element={<Stub title="Mes accès compagnies" sprint="Sprint 2" />} />
               <Route path="/courtier/sinistres" element={<Stub title="Sinistres" sprint="Sprint 4" />} />
-              <Route path="/courtier/paiements" element={<Stub title="Paiements" sprint="Sprint 5" />} />
               <Route path="/courtier/messages" element={<Stub title="Messagerie" sprint="Sprint 3" />} />
             </Route>
 
@@ -97,7 +96,6 @@ const App = () => (
               <Route path="/assureur/reseau" element={<Stub title="Réseau" sprint="Sprint 2" />} />
               <Route path="/assureur/demandes-courtiers" element={<Stub title="Demandes courtiers" sprint="Sprint 2" />} />
               <Route path="/assureur/sinistres" element={<Stub title="Sinistres" sprint="Sprint 4" />} />
-              <Route path="/assureur/paiements" element={<Stub title="Paiements" sprint="Sprint 5" />} />
               <Route path="/assureur/attestations" element={<Stub title="Stock attestations" sprint="Sprint 3" />} />
               <Route path="/assureur/messages" element={<Stub title="Messagerie" sprint="Sprint 3" />} />
             </Route>

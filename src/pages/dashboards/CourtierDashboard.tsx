@@ -1,11 +1,14 @@
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, FileCheck, Building2, Users, Plus } from "lucide-react";
+import { FileCheck, TrendingUp, Wallet, Plus, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useFinanceStats } from "@/hooks/useFinanceStats";
+import { formatFCFA } from "@/lib/format";
 
 export default function CourtierDashboard() {
+  const f = useFinanceStats();
   return (
     <div className="space-y-6">
       <PageHeader
@@ -19,10 +22,10 @@ export default function CourtierDashboard() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Cotations du mois" value="0" icon={FileText} accent="primary" />
-        <StatCard label="Contrats émis" value="0" icon={FileCheck} accent="success" />
-        <StatCard label="Compagnies actives" value="0" icon={Building2} accent="info" />
-        <StatCard label="Clients" value="0" icon={Users} accent="warning" />
+        <StatCard label="CA encaissé (mois)" value={formatFCFA(f.caMonth)} icon={TrendingUp} accent="success" />
+        <StatCard label="CA encaissé (année)" value={formatFCFA(f.caYear)} icon={TrendingUp} accent="primary" />
+        <StatCard label="À encaisser" value={formatFCFA(f.pending)} icon={Wallet} accent="warning" />
+        <StatCard label="Contrats actifs" value={f.contractsActive} icon={FileCheck} accent="info" />
       </div>
 
       <Card>
@@ -32,7 +35,7 @@ export default function CourtierDashboard() {
             Aucun accès actif. Faites une demande d'accès à une compagnie depuis la page « Mes accès ».
           </p>
           <Button asChild variant="outline" className="mt-4">
-            <Link to="/courtier/compagnies">Gérer mes accès</Link>
+            <Link to="/courtier/compagnies"><Building2 className="h-4 w-4" /> Gérer mes accès</Link>
           </Button>
         </CardContent>
       </Card>

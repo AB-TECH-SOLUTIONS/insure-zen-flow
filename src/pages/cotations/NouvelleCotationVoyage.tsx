@@ -115,7 +115,7 @@ export default function NouvelleCotationVoyage({ basePath = "/agent" }: { basePa
         </div>
       </Card>
 
-      <ClientSelector companyId={companyId} value={client} onChange={setClient} />
+      <ClientSelector companyId={companyId} value={client} onChange={setClient} scanDocType="passeport" />
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
         <Card className="p-6 space-y-4">

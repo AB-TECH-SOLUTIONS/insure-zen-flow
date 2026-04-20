@@ -6,21 +6,46 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import type { AutoInput } from "@/lib/tarifs/moteurAuto";
 import { CATEGORIE_LABELS, OPTIONS_IPT, type Categorie, type Zone } from "@/lib/tarifs/auto";
+import { DocumentScanner } from "@/components/scan/DocumentScanner";
 
 interface Props {
   value: AutoInput;
   onChange: (next: AutoInput) => void;
+  clientId?: string | null;
+  companyId?: string | null;
 }
 
-export function VehiculeForm({ value, onChange }: Props) {
+export function VehiculeForm({ value, onChange, clientId, companyId }: Props) {
   const set = <K extends keyof AutoInput>(k: K, v: AutoInput[K]) => onChange({ ...value, [k]: v });
   const setG = <K extends keyof AutoInput["garanties"]>(k: K, v: AutoInput["garanties"][K]) =>
     onChange({ ...value, garanties: { ...value.garanties, [k]: v } });
 
+  const applyCarteGrise = (data: Record<string, unknown>) => {
+    const next: AutoInput = { ...value };
+    if (typeof data.immatriculation === "string") next.immatriculation = data.immatriculation;
+    if (typeof data.marque === "string") next.marque = data.marque;
+    if (typeof data.modele === "string") next.modele = data.modele;
+    if (typeof data.cv === "number" && data.cv > 0) next.cv = data.cv;
+    if (typeof data.places === "number" && data.places > 0) next.places = data.places;
+    if (typeof data.chargeUtileKg === "number") next.chargeUtileKg = data.chargeUtileKg;
+    if (data.energie === "essence" || data.energie === "diesel") next.energie = data.energie;
+    onChange(next);
+  };
+
   return (
     <div className="space-y-6">
       <Card className="p-6 space-y-4">
-        <h3 className="font-display text-lg font-semibold">Véhicule</h3>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <h3 className="font-display text-lg font-semibold">Véhicule</h3>
+          <DocumentScanner
+            docType="carte_grise"
+            label="Scanner la carte grise"
+            clientId={clientId}
+            companyId={companyId}
+            onExtracted={applyCarteGrise}
+            compact
+          />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Catégorie</Label>

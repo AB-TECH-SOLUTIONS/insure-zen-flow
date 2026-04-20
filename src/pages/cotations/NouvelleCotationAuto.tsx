@@ -57,7 +57,7 @@ const initialInput: AutoInput = {
 
 export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Props> = {}) {
   const navigate = useNavigate();
-  const { user, primaryCompanyId } = useAuth();
+  const { user, role, primaryCompanyId } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
   const [client, setClient] = useState<ClientLite | null>({ full_name: "", phone: "" });
@@ -92,7 +92,7 @@ export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Pr
     }
     setSaving(true);
     try {
-      const clientId = await ensureClient(client, companyId, user.id);
+      const clientId = await ensureClient(client, companyId, user.id, role);
       const { data: quote, error: qErr } = await supabase.from("quotes").insert({
         company_id: companyId,
         client_id: clientId,

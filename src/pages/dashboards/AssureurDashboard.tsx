@@ -1,9 +1,12 @@
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, FileCheck, AlertTriangle, BarChart3, Users, Stamp } from "lucide-react";
+import { FileCheck, BarChart3, Users, Stamp, Wallet, TrendingUp } from "lucide-react";
+import { useFinanceStats } from "@/hooks/useFinanceStats";
+import { formatFCFA } from "@/lib/format";
 
 export default function AssureurDashboard() {
+  const f = useFinanceStats();
   return (
     <div className="space-y-6">
       <PageHeader
@@ -12,10 +15,10 @@ export default function AssureurDashboard() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Chiffre d'affaires" value="0 FCFA" icon={BarChart3} accent="primary" hint="ce mois-ci" />
-        <StatCard label="Contrats actifs" value="0" icon={FileCheck} accent="success" />
-        <StatCard label="Cotations en attente" value="0" icon={FileText} accent="info" />
-        <StatCard label="Sinistres ouverts" value="0" icon={AlertTriangle} accent="warning" />
+        <StatCard label="CA mois" value={formatFCFA(f.caMonth)} icon={BarChart3} accent="primary" />
+        <StatCard label="CA année" value={formatFCFA(f.caYear)} icon={TrendingUp} accent="success" />
+        <StatCard label="À encaisser" value={formatFCFA(f.pending)} icon={Wallet} accent="warning" />
+        <StatCard label="Contrats actifs" value={f.contractsActive} icon={FileCheck} accent="info" />
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">

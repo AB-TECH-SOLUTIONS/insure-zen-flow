@@ -144,7 +144,7 @@ export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Pr
       <ClientSelector companyId={companyId} value={client} onChange={setClient} />
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-        <VehiculeForm value={input} onChange={setInput} />
+        <VehiculeForm value={input} onChange={setInput} clientId={client?.id ?? null} companyId={companyId || null} />
         <div className="xl:sticky xl:top-4 space-y-4">
           <DecomptePanel result={result} overrides={overrides} onChange={setOverrides} />
           <Button onClick={save} disabled={saving} size="lg" className="w-full">

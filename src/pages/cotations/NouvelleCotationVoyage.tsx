@@ -71,7 +71,7 @@ export default function NouvelleCotationVoyage({ basePath = "/agent" }: { basePa
     if (!client || !client.full_name.trim()) return toast.error("Sélectionnez ou renseignez un client");
     setSaving(true);
     try {
-      const clientId = await ensureClient(client, companyId, user.id);
+      const clientId = await ensureClient(client, companyId, user.id, role);
       const { data: quote, error: qErr } = await supabase.from("quotes").insert({
         company_id: companyId,
         client_id: clientId,

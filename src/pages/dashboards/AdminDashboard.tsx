@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Users, FileText, FileCheck } from "lucide-react";
+import { Building2, FileCheck, TrendingUp, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useFinanceStats } from "@/hooks/useFinanceStats";
+import { formatFCFA } from "@/lib/format";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({ companies: 0, quotes: 0, contracts: 0, claims: 0 });
+  const f = useFinanceStats();
 
   useEffect(() => {
     (async () => {
@@ -33,10 +36,10 @@ export default function AdminDashboard() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="CA encaissé (année)" value={formatFCFA(f.caYear)} icon={TrendingUp} accent="success" />
+        <StatCard label="À encaisser" value={formatFCFA(f.pending)} icon={Wallet} accent="warning" />
+        <StatCard label="Contrats actifs" value={f.contractsActive} icon={FileCheck} accent="info" />
         <StatCard label="Compagnies" value={stats.companies} icon={Building2} accent="primary" />
-        <StatCard label="Utilisateurs" value="—" icon={Users} accent="info" hint="à venir" />
-        <StatCard label="Cotations" value={stats.quotes} icon={FileText} accent="success" />
-        <StatCard label="Contrats" value={stats.contracts} icon={FileCheck} accent="warning" />
       </div>
 
       <Card>

@@ -216,6 +216,60 @@ export type Database = {
           },
         ]
       }
+      client_documents: {
+        Row: {
+          client_id: string | null
+          company_id: string | null
+          created_at: string
+          doc_type: string
+          extracted: Json
+          id: string
+          mime_type: string | null
+          storage_path: string
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          client_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          doc_type: string
+          extracted?: Json
+          id?: string
+          mime_type?: string | null
+          storage_path: string
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          client_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          doc_type?: string
+          extracted?: Json
+          id?: string
+          mime_type?: string | null
+          storage_path?: string
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           address: string | null

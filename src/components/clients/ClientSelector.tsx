@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, ChevronsUpDown, UserPlus, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DocumentScanner, type ScanDocType } from "@/components/scan/DocumentScanner";
 
 export interface ClientLite {
   id?: string; // undefined = nouveau client à créer
@@ -19,9 +20,11 @@ interface Props {
   companyId: string;
   value: ClientLite | null;
   onChange: (c: ClientLite | null) => void;
+  /** Type de pièce d'identité à proposer pour le scan IA. */
+  scanDocType?: ScanDocType;
 }
 
-export function ClientSelector({ companyId, value, onChange }: Props) {
+export function ClientSelector({ companyId, value, onChange, scanDocType = "permis" }: Props) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<ClientLite[]>([]);
@@ -48,6 +51,16 @@ export function ClientSelector({ companyId, value, onChange }: Props) {
       cancel = true;
     };
   }, [search, companyId, mode]);
+
+  const applyExtraction = (d: Record<string, unknown>) => {
+    const nom = (d.nom as string | undefined) ?? "";
+    const prenom = (d.prenom as string | undefined) ?? "";
+    const full = [prenom, nom].filter(Boolean).join(" ").trim();
+    onChange({
+      ...(value ?? { full_name: "" }),
+      full_name: full || value?.full_name || "",
+    });
+  };
 
   return (
     <Card className="p-4 space-y-4">
@@ -127,6 +140,16 @@ export function ClientSelector({ companyId, value, onChange }: Props) {
           </PopoverContent>
         </Popover>
       ) : (
+        <>
+        <div className="flex justify-end">
+          <DocumentScanner
+            docType={scanDocType}
+            label={scanDocType === "passeport" ? "Scanner le passeport" : "Scanner permis / CNI"}
+            companyId={companyId}
+            onExtracted={applyExtraction}
+            compact
+          />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="space-y-1">
             <Label className="text-xs">Nom complet *</Label>
@@ -154,6 +177,7 @@ export function ClientSelector({ companyId, value, onChange }: Props) {
             />
           </div>
         </div>
+        </>
       )}
     </Card>
   );

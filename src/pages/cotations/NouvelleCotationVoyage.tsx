@@ -71,7 +71,7 @@ export default function NouvelleCotationVoyage({ basePath = "/agent" }: { basePa
     if (!client || !client.full_name.trim()) return toast.error("Sélectionnez ou renseignez un client");
     setSaving(true);
     try {
-      const clientId = await ensureClient(client, companyId, user.id);
+      const clientId = await ensureClient(client, companyId, user.id, role);
       const { data: quote, error: qErr } = await supabase.from("quotes").insert({
         company_id: companyId,
         client_id: clientId,
@@ -115,7 +115,7 @@ export default function NouvelleCotationVoyage({ basePath = "/agent" }: { basePa
         </div>
       </Card>
 
-      <ClientSelector companyId={companyId} value={client} onChange={setClient} />
+      <ClientSelector companyId={companyId} value={client} onChange={setClient} scanDocType="passeport" />
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
         <Card className="p-6 space-y-4">

@@ -57,7 +57,7 @@ const initialInput: AutoInput = {
 
 export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Props> = {}) {
   const navigate = useNavigate();
-  const { user, primaryCompanyId } = useAuth();
+  const { user, role, primaryCompanyId } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
   const [client, setClient] = useState<ClientLite | null>({ full_name: "", phone: "" });
@@ -92,7 +92,7 @@ export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Pr
     }
     setSaving(true);
     try {
-      const clientId = await ensureClient(client, companyId, user.id);
+      const clientId = await ensureClient(client, companyId, user.id, role);
       const { data: quote, error: qErr } = await supabase.from("quotes").insert({
         company_id: companyId,
         client_id: clientId,
@@ -144,7 +144,7 @@ export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Pr
       <ClientSelector companyId={companyId} value={client} onChange={setClient} />
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-        <VehiculeForm value={input} onChange={setInput} />
+        <VehiculeForm value={input} onChange={setInput} clientId={client?.id ?? null} companyId={companyId || null} />
         <div className="xl:sticky xl:top-4 space-y-4">
           <DecomptePanel result={result} overrides={overrides} onChange={setOverrides} />
           <Button onClick={save} disabled={saving} size="lg" className="w-full">

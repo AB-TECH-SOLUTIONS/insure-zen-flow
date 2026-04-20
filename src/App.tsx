@@ -25,6 +25,7 @@ import ListeCotations from "./pages/cotations/ListeCotations";
 import DetailCotation from "./pages/cotations/DetailCotation";
 import ListeContrats from "./pages/contrats/ListeContrats";
 import DetailContrat from "./pages/contrats/DetailContrat";
+import ListePaiements from "./pages/paiements/ListePaiements";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const RoleRoutes = ({ base }: { base: string }) => (
     <Route path={`${base}/cotations/:id`} element={<DetailCotation basePath={base} />} />
     <Route path={`${base}/contrats`} element={<ListeContrats basePath={base} />} />
     <Route path={`${base}/contrats/:id`} element={<DetailContrat basePath={base} />} />
+    <Route path={`${base}/paiements`} element={<ListePaiements />} />
   </>
 );
 

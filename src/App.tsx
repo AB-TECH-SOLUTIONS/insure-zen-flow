@@ -26,6 +26,10 @@ import DetailCotation from "./pages/cotations/DetailCotation";
 import ListeContrats from "./pages/contrats/ListeContrats";
 import DetailContrat from "./pages/contrats/DetailContrat";
 import ListePaiements from "./pages/paiements/ListePaiements";
+import ListeClients from "./pages/clients/ListeClients";
+import NouveauClient from "./pages/clients/NouveauClient";
+import DetailClient from "./pages/clients/DetailClient";
+import ListeVehicules from "./pages/vehicules/ListeVehicules";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +48,10 @@ const RoleRoutes = ({ base }: { base: string }) => (
     <Route path={`${base}/contrats`} element={<ListeContrats basePath={base} />} />
     <Route path={`${base}/contrats/:id`} element={<DetailContrat basePath={base} />} />
     <Route path={`${base}/paiements`} element={<ListePaiements />} />
+    <Route path={`${base}/clients`} element={<ListeClients basePath={base} />} />
+    <Route path={`${base}/clients/nouveau`} element={<NouveauClient basePath={base} />} />
+    <Route path={`${base}/clients/:id`} element={<DetailClient basePath={base} />} />
+    <Route path={`${base}/vehicules`} element={<ListeVehicules basePath={base} />} />
   </>
 );
 
@@ -71,8 +79,6 @@ const App = () => (
               <Route path="/agent" element={<AgentDashboard />} />
               {RoleRoutes({ base: "/agent" })}
               <Route path="/agent/quotes" element={<ListeCotations basePath="/agent" />} />
-              <Route path="/agent/clients" element={<Stub title="Clients" sprint="Sprint 1" />} />
-              <Route path="/agent/vehicules" element={<Stub title="Véhicules" sprint="Sprint 1" />} />
               <Route path="/agent/sinistres" element={<Stub title="Sinistres" sprint="Sprint 4" />} />
               <Route path="/agent/attestations" element={<Stub title="Stock attestations" sprint="Sprint 3" />} />
               <Route path="/agent/messages" element={<Stub title="Messagerie" sprint="Sprint 3" />} />
@@ -82,7 +88,6 @@ const App = () => (
             <Route element={<ProtectedRoute allow={["courtier", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/courtier" element={<CourtierDashboard />} />
               {RoleRoutes({ base: "/courtier" })}
-              <Route path="/courtier/clients" element={<Stub title="Clients" sprint="Sprint 1" />} />
               <Route path="/courtier/compagnies" element={<Stub title="Mes accès compagnies" sprint="Sprint 2" />} />
               <Route path="/courtier/sinistres" element={<Stub title="Sinistres" sprint="Sprint 4" />} />
               <Route path="/courtier/messages" element={<Stub title="Messagerie" sprint="Sprint 3" />} />

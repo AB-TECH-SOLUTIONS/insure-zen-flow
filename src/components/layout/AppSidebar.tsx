@@ -6,7 +6,7 @@ import {
 import {
   LayoutDashboard, FileText, Users, Car, FileCheck, AlertTriangle, CreditCard,
   MessagesSquare, Settings, Building2, ShieldCheck, ScrollText, BarChart3, Stamp,
-  UserCog, Plus,
+  UserCog, Plus, Database,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import type { AppRole } from "@/types/roles";
@@ -39,6 +39,7 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
       { title: "Paiements", url: "/agent/paiements", icon: CreditCard },
       { title: "Stock attestations", url: "/agent/attestations", icon: Stamp },
       { title: "Messagerie", url: "/agent/messages", icon: MessagesSquare },
+      { title: "Import / Export", url: "/agent/import-export", icon: Database },
     ]},
   ],
   courtier: [
@@ -53,6 +54,7 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
       { title: "Sinistres", url: "/courtier/sinistres", icon: AlertTriangle },
       { title: "Paiements", url: "/courtier/paiements", icon: CreditCard },
       { title: "Messagerie", url: "/courtier/messages", icon: MessagesSquare },
+      { title: "Import / Export", url: "/courtier/import-export", icon: Database },
     ]},
   ],
   assureur: [
@@ -69,6 +71,7 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
       { title: "Paiements", url: "/assureur/paiements", icon: CreditCard },
       { title: "Stock attestations", url: "/assureur/attestations", icon: Stamp },
       { title: "Messagerie", url: "/assureur/messages", icon: MessagesSquare },
+      { title: "Import / Export", url: "/assureur/import-export", icon: Database },
     ]},
   ],
   super_admin: [
@@ -82,6 +85,7 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
       { title: "Cotations", url: "/admin/cotations", icon: FileText },
       { title: "Contrats", url: "/admin/contrats", icon: FileCheck },
       { title: "Sinistres", url: "/admin/sinistres", icon: AlertTriangle },
+      { title: "Import / Export", url: "/admin/import-export", icon: Database },
       { title: "Journaux", url: "/admin/logs", icon: ScrollText },
       { title: "Paramètres", url: "/admin/parametres", icon: Settings },
     ]},

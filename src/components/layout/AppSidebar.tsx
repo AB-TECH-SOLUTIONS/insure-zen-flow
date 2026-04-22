@@ -6,7 +6,7 @@ import {
 import {
   LayoutDashboard, FileText, Users, Car, FileCheck, AlertTriangle, CreditCard,
   MessagesSquare, Settings, Building2, ShieldCheck, ScrollText, BarChart3, Stamp,
-  UserCog, Plus, Database,
+  UserCog, Plus, Database, ListTodo,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import type { AppRole } from "@/types/roles";
@@ -35,6 +35,7 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
       { title: "Véhicules", url: "/agent/vehicules", icon: Car },
     ]},
     { label: "Suivi", items: [
+      { title: "Tâches", url: "/agent/taches", icon: ListTodo },
       { title: "Sinistres", url: "/agent/sinistres", icon: AlertTriangle },
       { title: "Paiements", url: "/agent/paiements", icon: CreditCard },
       { title: "Stock attestations", url: "/agent/attestations", icon: Stamp },
@@ -51,6 +52,7 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
     ]},
     { label: "Compagnies", items: [
       { title: "Mes accès", url: "/courtier/compagnies", icon: Building2 },
+      { title: "Tâches", url: "/courtier/taches", icon: ListTodo },
       { title: "Sinistres", url: "/courtier/sinistres", icon: AlertTriangle },
       { title: "Paiements", url: "/courtier/paiements", icon: CreditCard },
       { title: "Messagerie", url: "/courtier/messages", icon: MessagesSquare },

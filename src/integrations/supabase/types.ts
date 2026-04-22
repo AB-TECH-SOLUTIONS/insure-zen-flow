@@ -752,6 +752,105 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          company_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          difficulties: string | null
+          due_date: string | null
+          id: string
+          observations: string | null
+          priority: Database["public"]["Enums"]["task_priority"]
+          related_claim_id: string | null
+          related_client_id: string | null
+          related_contract_id: string | null
+          related_quote_id: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          company_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulties?: string | null
+          due_date?: string | null
+          id?: string
+          observations?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          related_claim_id?: string | null
+          related_client_id?: string | null
+          related_contract_id?: string | null
+          related_quote_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          company_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulties?: string | null
+          due_date?: string | null
+          id?: string
+          observations?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          related_claim_id?: string | null
+          related_client_id?: string | null
+          related_contract_id?: string | null
+          related_quote_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_related_claim_id_fkey"
+            columns: ["related_claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_related_client_id_fkey"
+            columns: ["related_client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_related_contract_id_fkey"
+            columns: ["related_contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_related_quote_id_fkey"
+            columns: ["related_quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -885,6 +984,8 @@ export type Database = {
       payment_status: "en_attente" | "paye" | "echoue" | "rembourse"
       quote_status: "brouillon" | "envoyee" | "acceptee" | "refusee" | "expiree"
       quote_type: "auto" | "voyage" | "risques_divers"
+      task_priority: "low" | "med" | "high"
+      task_status: "todo" | "wip" | "done" | "blocked"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1035,6 +1136,8 @@ export const Constants = {
       payment_status: ["en_attente", "paye", "echoue", "rembourse"],
       quote_status: ["brouillon", "envoyee", "acceptee", "refusee", "expiree"],
       quote_type: ["auto", "voyage", "risques_divers"],
+      task_priority: ["low", "med", "high"],
+      task_status: ["todo", "wip", "done", "blocked"],
     },
   },
 } as const

@@ -329,6 +329,54 @@ export type Database = {
           },
         ]
       }
+      commission_reversals: {
+        Row: {
+          amount: number
+          beneficiary_name: string | null
+          beneficiary_user_id: string | null
+          company_id: string
+          contract_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          paid_at: string | null
+          rate: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          beneficiary_name?: string | null
+          beneficiary_user_id?: string | null
+          company_id: string
+          contract_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          paid_at?: string | null
+          rate?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          beneficiary_name?: string | null
+          beneficiary_user_id?: string | null
+          company_id?: string
+          contract_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          paid_at?: string | null
+          rate?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           code: string
@@ -405,8 +453,13 @@ export type Database = {
       }
       contracts: {
         Row: {
+          accessoires: number | null
+          acompte_initial: number | null
           attestation_number: string | null
           client_id: string
+          commercial_nature: string
+          commission_amount: number | null
+          commission_rate: number | null
           company_id: string
           contract_number: string
           created_at: string
@@ -414,7 +467,11 @@ export type Database = {
           end_date: string
           id: string
           pdf_url: string | null
+          prime_brute: number | null
+          prime_nette: number | null
           quote_id: string | null
+          reduction: number | null
+          source_company: string | null
           start_date: string
           status: Database["public"]["Enums"]["contract_status"]
           total_premium: number
@@ -422,8 +479,13 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          accessoires?: number | null
+          acompte_initial?: number | null
           attestation_number?: string | null
           client_id: string
+          commercial_nature?: string
+          commission_amount?: number | null
+          commission_rate?: number | null
           company_id: string
           contract_number: string
           created_at?: string
@@ -431,7 +493,11 @@ export type Database = {
           end_date: string
           id?: string
           pdf_url?: string | null
+          prime_brute?: number | null
+          prime_nette?: number | null
           quote_id?: string | null
+          reduction?: number | null
+          source_company?: string | null
           start_date: string
           status?: Database["public"]["Enums"]["contract_status"]
           total_premium: number
@@ -439,8 +505,13 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          accessoires?: number | null
+          acompte_initial?: number | null
           attestation_number?: string | null
           client_id?: string
+          commercial_nature?: string
+          commission_amount?: number | null
+          commission_rate?: number | null
           company_id?: string
           contract_number?: string
           created_at?: string
@@ -448,7 +519,11 @@ export type Database = {
           end_date?: string
           id?: string
           pdf_url?: string | null
+          prime_brute?: number | null
+          prime_nette?: number | null
           quote_id?: string | null
+          reduction?: number | null
+          source_company?: string | null
           start_date?: string
           status?: Database["public"]["Enums"]["contract_status"]
           total_premium?: number
@@ -751,6 +826,90 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      recovery_complaints: {
+        Row: {
+          amount_due: number
+          amount_recovered: number
+          assigned_to: string | null
+          client_id: string | null
+          company_id: string
+          contract_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          last_reminder_at: string | null
+          note: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_due?: number
+          amount_recovered?: number
+          assigned_to?: string | null
+          client_id?: string | null
+          company_id: string
+          contract_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          last_reminder_at?: string | null
+          note?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_due?: number
+          amount_recovered?: number
+          assigned_to?: string | null
+          client_id?: string | null
+          company_id?: string
+          contract_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          last_reminder_at?: string | null
+          note?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      revenue_objectives: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          month: number
+          notes: string | null
+          product_type: Database["public"]["Enums"]["quote_type"] | null
+          target_amount: number
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          month: number
+          notes?: string | null
+          product_type?: Database["public"]["Enums"]["quote_type"] | null
+          target_amount?: number
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          month?: number
+          notes?: string | null
+          product_type?: Database["public"]["Enums"]["quote_type"] | null
+          target_amount?: number
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
       }
       tasks: {
         Row: {

@@ -6,7 +6,7 @@ import {
 import {
   LayoutDashboard, FileText, Users, Car, FileCheck, AlertTriangle, CreditCard,
   MessagesSquare, Settings, Building2, ShieldCheck, ScrollText, BarChart3, Stamp,
-  UserCog, Plus, Database, ListTodo,
+  UserCog, Plus, Database, ListTodo, LineChart,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import type { AppRole } from "@/types/roles";
@@ -36,6 +36,7 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
     ]},
     { label: "Suivi", items: [
       { title: "Tâches", url: "/agent/taches", icon: ListTodo },
+      { title: "Suivi CA", url: "/agent/suivi-ca", icon: LineChart },
       { title: "Sinistres", url: "/agent/sinistres", icon: AlertTriangle },
       { title: "Paiements", url: "/agent/paiements", icon: CreditCard },
       { title: "Stock attestations", url: "/agent/attestations", icon: Stamp },
@@ -53,6 +54,7 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
     { label: "Compagnies", items: [
       { title: "Mes accès", url: "/courtier/compagnies", icon: Building2 },
       { title: "Tâches", url: "/courtier/taches", icon: ListTodo },
+      { title: "Suivi CA", url: "/courtier/suivi-ca", icon: LineChart },
       { title: "Sinistres", url: "/courtier/sinistres", icon: AlertTriangle },
       { title: "Paiements", url: "/courtier/paiements", icon: CreditCard },
       { title: "Messagerie", url: "/courtier/messages", icon: MessagesSquare },
@@ -63,6 +65,7 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
     { label: "Pilotage", items: [
       { title: "Tableau de bord", url: "/assureur", icon: LayoutDashboard },
       { title: "Portefeuille", url: "/assureur/portefeuille", icon: BarChart3 },
+      { title: "Suivi CA", url: "/assureur/suivi-ca", icon: LineChart },
       { title: "Cotations", url: "/assureur/cotations", icon: FileText },
       { title: "Contrats", url: "/assureur/contrats", icon: FileCheck },
     ]},

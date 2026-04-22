@@ -35,6 +35,7 @@ import ListeSinistres from "./pages/sinistres/ListeSinistres";
 import StockAttestations from "./pages/attestations/StockAttestations";
 import ImportExport from "./pages/import-export/ImportExport";
 import ListeTaches from "./pages/taches/ListeTaches";
+import SuiviCA from "./pages/finance/SuiviCA";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,7 @@ const RoleRoutes = ({ base }: { base: string }) => (
     <Route path={`${base}/sinistres`} element={<ListeSinistres basePath={base} />} />
     <Route path={`${base}/import-export`} element={<ImportExport />} />
     <Route path={`${base}/taches`} element={<ListeTaches />} />
+    <Route path={`${base}/suivi-ca`} element={<SuiviCA />} />
   </>
 );
 

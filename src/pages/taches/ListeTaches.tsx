@@ -102,15 +102,21 @@ export default function ListeTaches() {
   }, [tasks]);
 
   const addTask = async () => {
-    if (!primaryCompanyId || !user) {
-      toast.error("Compagnie ou utilisateur manquant");
-      return;
+    if (!user) { toast.error("Utilisateur non connecté"); return; }
+    let companyId = primaryCompanyId;
+    if (!companyId) {
+      // Fallback : on prend la 1ère compagnie disponible et on l'attache au profil
+      const { data: c } = await supabase.from("companies").select("id").limit(1).maybeSingle();
+      if (!c?.id) { toast.error("Aucune compagnie disponible. Contactez l'administrateur."); return; }
+      companyId = c.id;
+      await supabase.from("profiles").update({ primary_company_id: companyId }).eq("user_id", user.id);
+      toast.info("Compagnie associée à votre profil");
     }
     const today = new Date().toISOString().slice(0, 10);
     const { data, error } = await supabase
       .from("tasks")
       .insert({
-        company_id: primaryCompanyId,
+        company_id: companyId,
         title: "Nouvelle tâche",
         priority: "med",
         status: "todo",

@@ -127,9 +127,9 @@ export default function ListeTaches() {
 
   const updateImmediate = async (id: string, field: keyof Task, value: any) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, [field]: value } : t));
-    const patch: any = { [field]: value };
+    const patch: Record<string, unknown> = { [field as string]: value };
     if (field === "status") patch.completed_at = value === "done" ? new Date().toISOString() : null;
-    const { error } = await supabase.from("tasks").update(patch).eq("id", id);
+    const { error } = await supabase.from("tasks").update(patch as never).eq("id", id);
     if (error) toast.error(error.message);
   };
 
@@ -138,7 +138,8 @@ export default function ListeTaches() {
     const key = `${id}-${field}`;
     clearTimeout(debounceTimers.current[key]);
     debounceTimers.current[key] = setTimeout(async () => {
-      const { error } = await supabase.from("tasks").update({ [field]: value }).eq("id", id);
+      const patch: Record<string, unknown> = { [field as string]: value };
+      const { error } = await supabase.from("tasks").update(patch as never).eq("id", id);
       if (error) toast.error(error.message);
       else toast.success("Sauvegardé", { duration: 1200 });
     }, 1200);
@@ -202,11 +203,11 @@ export default function ListeTaches() {
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-        <StatCard title="Total" value={stats.total.toString()} icon={ListTodo} />
-        <StatCard title="En cours" value={stats.wip.toString()} icon={Loader2} />
-        <StatCard title="Terminées" value={stats.done.toString()} icon={CheckCircle2} />
-        <StatCard title="Bloquées" value={stats.blocked.toString()} icon={AlertOctagon} />
-        <StatCard title="En retard" value={stats.overdue.toString()} icon={Clock} />
+        <StatCard label="Total" value={stats.total} icon={ListTodo} />
+        <StatCard label="En cours" value={stats.wip} icon={Loader2} accent="info" />
+        <StatCard label="Terminées" value={stats.done} icon={CheckCircle2} accent="success" />
+        <StatCard label="Bloquées" value={stats.blocked} icon={AlertOctagon} accent="warning" />
+        <StatCard label="En retard" value={stats.overdue} icon={Clock} accent="warning" />
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground uppercase tracking-wide">Avancement</p>

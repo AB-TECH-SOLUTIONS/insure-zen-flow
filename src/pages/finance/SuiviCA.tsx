@@ -4,14 +4,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ways/../ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { TrendingUp, TrendingDown, Target, Wallet, Banknote, Plus, Save, RefreshCw } from "lucide-react";
-import { fmtFCFA } from "@/lib/format";
+import { formatFCFA as fmtFCFA } from "@/lib/format";
 
 type Payment = { id: string; amount: number; status: string; paid_at: string | null; company_id: string };
 type Contract = { id: string; company_id: string; type: string; commercial_nature: string | null; total_premium: number; start_date: string };

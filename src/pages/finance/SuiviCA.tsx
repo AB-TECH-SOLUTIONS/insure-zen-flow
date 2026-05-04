@@ -17,6 +17,8 @@ type Payment = { id: string; amount: number; status: string; paid_at: string | n
 type Contract = { id: string; company_id: string; type: string; commercial_nature: string | null; total_premium: number; start_date: string };
 type Objective = { id?: string; company_id: string; year: number; month: number; product_type: string | null; target_amount: number };
 type Company = { id: string; name: string };
+type Recovery = { id: string; company_id: string; client_id: string | null; amount_due: number; amount_recovered: number; status: string; last_reminder_at: string | null; note: string | null; created_at: string };
+type Commission = { id: string; company_id: string; beneficiary_name: string | null; beneficiary_user_id: string | null; amount: number; rate: number; status: string; paid_at: string | null; contract_id: string | null; note: string | null; created_at: string };
 
 const MONTHS = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"];
 
@@ -29,6 +31,8 @@ export default function SuiviCA() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [objectives, setObjectives] = useState<Objective[]>([]);
+  const [recoveries, setRecoveries] = useState<Recovery[]>([]);
+  const [commissions, setCommissions] = useState<Commission[]>([]);
   const [loading, setLoading] = useState(true);
   const [newObj, setNewObj] = useState<{ month: number; target: number }>({ month: now.getMonth() + 1, target: 0 });
 
@@ -37,16 +41,20 @@ export default function SuiviCA() {
     const yStart = `${year}-01-01`;
     const yEnd = `${year}-12-31`;
     const yPrevStart = `${year - 1}-01-01`;
-    const [pay, ctr, obj, comp] = await Promise.all([
+    const [pay, ctr, obj, comp, rec, com] = await Promise.all([
       supabase.from("payments").select("id,amount,status,paid_at,company_id").gte("paid_at", yPrevStart).lte("paid_at", yEnd),
       supabase.from("contracts").select("id,company_id,type,commercial_nature,total_premium,start_date").gte("start_date", yPrevStart).lte("start_date", yEnd),
       supabase.from("revenue_objectives").select("*").eq("year", year),
       supabase.from("companies").select("id,name").order("name"),
+      supabase.from("recovery_complaints").select("*").order("created_at", { ascending: false }),
+      supabase.from("commission_reversals").select("*").order("created_at", { ascending: false }),
     ]);
     setPayments((pay.data as Payment[]) || []);
     setContracts((ctr.data as Contract[]) || []);
     setObjectives((obj.data as Objective[]) || []);
     setCompanies((comp.data as Company[]) || []);
+    setRecoveries((rec.data as Recovery[]) || []);
+    setCommissions((com.data as Commission[]) || []);
     setLoading(false);
   };
 
@@ -116,6 +124,22 @@ export default function SuiviCA() {
     });
     return { acq, ren };
   }, [contracts, companyFilter, year]);
+
+  const recoveriesView = useMemo(() => {
+    const list = filterCo(recoveries);
+    const due = list.reduce((s, r) => s + Number(r.amount_due), 0);
+    const rec = list.reduce((s, r) => s + Number(r.amount_recovered), 0);
+    const open = list.filter(r => r.status !== "solde").length;
+    return { list, due, rec, open, rate: due > 0 ? (rec / due) * 100 : 0 };
+  }, [recoveries, companyFilter]);
+
+  const commissionsView = useMemo(() => {
+    const list = filterCo(commissions);
+    const total = list.reduce((s, c) => s + Number(c.amount), 0);
+    const paid = list.filter(c => c.status === "paye").reduce((s, c) => s + Number(c.amount), 0);
+    const due = total - paid;
+    return { list, total, paid, due };
+  }, [commissions, companyFilter]);
 
   const saveObjective = async () => {
     if (!primaryCompanyId) { toast.error("Compagnie manquante sur votre profil"); return; }
@@ -291,6 +315,113 @@ export default function SuiviCA() {
           )}
         </CardContent>
       </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center justify-between">
+              <span>Recouvrements</span>
+              <Badge variant="secondary">{recoveriesView.open} ouvert(s)</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-3 gap-3 text-center text-xs">
+              <div className="p-2 rounded bg-muted/40">
+                <p className="text-muted-foreground">Dû</p>
+                <p className="font-semibold tabular-nums">{fmtFCFA(recoveriesView.due)}</p>
+              </div>
+              <div className="p-2 rounded bg-success/10">
+                <p className="text-muted-foreground">Recouvré</p>
+                <p className="font-semibold tabular-nums text-success">{fmtFCFA(recoveriesView.rec)}</p>
+              </div>
+              <div className="p-2 rounded bg-warning/10">
+                <p className="text-muted-foreground">Reste à percevoir</p>
+                <p className="font-semibold tabular-nums">{fmtFCFA(recoveriesView.due - recoveriesView.rec)}</p>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-muted-foreground">Taux de recouvrement</span>
+                <span className="font-medium">{recoveriesView.rate.toFixed(1)}%</span>
+              </div>
+              <Progress value={Math.min(recoveriesView.rate, 100)} className="h-2" />
+            </div>
+            {recoveriesView.list.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-2">Aucune relance enregistrée.</p>
+            ) : (
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-left text-muted-foreground border-b">
+                    <th className="py-1">Statut</th>
+                    <th className="py-1 text-right">Dû</th>
+                    <th className="py-1 text-right">Recouvré</th>
+                    <th className="py-1">Dernière relance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recoveriesView.list.slice(0, 6).map(r => (
+                    <tr key={r.id} className="border-b">
+                      <td className="py-1"><Badge variant={r.status === "solde" ? "secondary" : "default"} className="capitalize">{r.status}</Badge></td>
+                      <td className="py-1 text-right tabular-nums">{fmtFCFA(Number(r.amount_due))}</td>
+                      <td className="py-1 text-right tabular-nums text-success">{fmtFCFA(Number(r.amount_recovered))}</td>
+                      <td className="py-1 text-muted-foreground">{r.last_reminder_at || "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center justify-between">
+              <span>Commissions / Reversements</span>
+              <Badge variant="secondary">{commissionsView.list.length} ligne(s)</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-3 gap-3 text-center text-xs">
+              <div className="p-2 rounded bg-muted/40">
+                <p className="text-muted-foreground">Total</p>
+                <p className="font-semibold tabular-nums">{fmtFCFA(commissionsView.total)}</p>
+              </div>
+              <div className="p-2 rounded bg-success/10">
+                <p className="text-muted-foreground">Payé</p>
+                <p className="font-semibold tabular-nums text-success">{fmtFCFA(commissionsView.paid)}</p>
+              </div>
+              <div className="p-2 rounded bg-warning/10">
+                <p className="text-muted-foreground">À payer</p>
+                <p className="font-semibold tabular-nums">{fmtFCFA(commissionsView.due)}</p>
+              </div>
+            </div>
+            {commissionsView.list.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-2">Aucune commission enregistrée.</p>
+            ) : (
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-left text-muted-foreground border-b">
+                    <th className="py-1">Bénéficiaire</th>
+                    <th className="py-1 text-right">Taux</th>
+                    <th className="py-1 text-right">Montant</th>
+                    <th className="py-1">Statut</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {commissionsView.list.slice(0, 6).map(c => (
+                    <tr key={c.id} className="border-b">
+                      <td className="py-1 font-medium">{c.beneficiary_name || "—"}</td>
+                      <td className="py-1 text-right tabular-nums">{Number(c.rate).toFixed(2)}%</td>
+                      <td className="py-1 text-right tabular-nums">{fmtFCFA(Number(c.amount))}</td>
+                      <td className="py-1"><Badge variant={c.status === "paye" ? "secondary" : "default"} className="capitalize">{c.status.replace("_", " ")}</Badge></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import {
 import {
   LayoutDashboard, FileText, Users, Car, FileCheck, AlertTriangle, CreditCard,
   MessagesSquare, Settings, Building2, ShieldCheck, ScrollText, BarChart3, Stamp,
-  UserCog, Plus, Database, ListTodo, LineChart,
+  UserCog, Plus, Database, ListTodo, LineChart, Briefcase, Wallet, Wrench,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import type { AppRole } from "@/types/roles";
@@ -27,36 +27,44 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
     ]},
   ],
   agent: [
-    { label: "Production", items: [
+    { label: "Pilotage", items: [
       { title: "Tableau de bord", url: "/agent", icon: LayoutDashboard },
+      { title: "Suivi CA", url: "/agent/suivi-ca", icon: LineChart },
+      { title: "Tâches équipe", url: "/agent/taches", icon: ListTodo },
+    ]},
+    { label: "Production", items: [
       { title: "Cotations", url: "/agent/cotations", icon: FileText },
       { title: "Contrats", url: "/agent/contrats", icon: FileCheck },
       { title: "Clients", url: "/agent/clients", icon: Users },
       { title: "Véhicules", url: "/agent/vehicules", icon: Car },
     ]},
-    { label: "Suivi", items: [
-      { title: "Tâches", url: "/agent/taches", icon: ListTodo },
-      { title: "Suivi CA", url: "/agent/suivi-ca", icon: LineChart },
-      { title: "Sinistres", url: "/agent/sinistres", icon: AlertTriangle },
+    { label: "Encaissements & sinistres", items: [
       { title: "Paiements", url: "/agent/paiements", icon: CreditCard },
+      { title: "Sinistres", url: "/agent/sinistres", icon: AlertTriangle },
       { title: "Stock attestations", url: "/agent/attestations", icon: Stamp },
+    ]},
+    { label: "Échanges & outils", items: [
       { title: "Messagerie", url: "/agent/messages", icon: MessagesSquare },
       { title: "Import / Export", url: "/agent/import-export", icon: Database },
     ]},
   ],
   courtier: [
-    { label: "Production", items: [
+    { label: "Pilotage", items: [
       { title: "Tableau de bord", url: "/courtier", icon: LayoutDashboard },
+      { title: "Suivi CA", url: "/courtier/suivi-ca", icon: LineChart },
+      { title: "Tâches équipe", url: "/courtier/taches", icon: ListTodo },
+      { title: "Mes accès compagnies", url: "/courtier/compagnies", icon: Building2 },
+    ]},
+    { label: "Production", items: [
       { title: "Cotations", url: "/courtier/cotations", icon: FileText },
       { title: "Contrats", url: "/courtier/contrats", icon: FileCheck },
       { title: "Clients", url: "/courtier/clients", icon: Users },
     ]},
-    { label: "Compagnies", items: [
-      { title: "Mes accès", url: "/courtier/compagnies", icon: Building2 },
-      { title: "Tâches", url: "/courtier/taches", icon: ListTodo },
-      { title: "Suivi CA", url: "/courtier/suivi-ca", icon: LineChart },
-      { title: "Sinistres", url: "/courtier/sinistres", icon: AlertTriangle },
+    { label: "Encaissements & sinistres", items: [
       { title: "Paiements", url: "/courtier/paiements", icon: CreditCard },
+      { title: "Sinistres", url: "/courtier/sinistres", icon: AlertTriangle },
+    ]},
+    { label: "Échanges & outils", items: [
       { title: "Messagerie", url: "/courtier/messages", icon: MessagesSquare },
       { title: "Import / Export", url: "/courtier/import-export", icon: Database },
     ]},
@@ -64,17 +72,25 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
   assureur: [
     { label: "Pilotage", items: [
       { title: "Tableau de bord", url: "/assureur", icon: LayoutDashboard },
-      { title: "Portefeuille", url: "/assureur/portefeuille", icon: BarChart3 },
       { title: "Suivi CA", url: "/assureur/suivi-ca", icon: LineChart },
+      { title: "Portefeuille", url: "/assureur/portefeuille", icon: BarChart3 },
+      { title: "Tâches équipe", url: "/assureur/taches", icon: ListTodo },
+    ]},
+    { label: "Production", items: [
       { title: "Cotations", url: "/assureur/cotations", icon: FileText },
       { title: "Contrats", url: "/assureur/contrats", icon: FileCheck },
+      { title: "Clients", url: "/assureur/clients", icon: Users },
     ]},
-    { label: "Réseau & opérations", items: [
+    { label: "Réseau", items: [
       { title: "Agents & courtiers", url: "/assureur/reseau", icon: Users },
       { title: "Demandes courtiers", url: "/assureur/demandes-courtiers", icon: UserCog },
-      { title: "Sinistres", url: "/assureur/sinistres", icon: AlertTriangle },
+    ]},
+    { label: "Encaissements & sinistres", items: [
       { title: "Paiements", url: "/assureur/paiements", icon: CreditCard },
+      { title: "Sinistres", url: "/assureur/sinistres", icon: AlertTriangle },
       { title: "Stock attestations", url: "/assureur/attestations", icon: Stamp },
+    ]},
+    { label: "Échanges & outils", items: [
       { title: "Messagerie", url: "/assureur/messages", icon: MessagesSquare },
       { title: "Import / Export", url: "/assureur/import-export", icon: Database },
     ]},

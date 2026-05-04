@@ -36,6 +36,7 @@ import StockAttestations from "./pages/attestations/StockAttestations";
 import ImportExport from "./pages/import-export/ImportExport";
 import ListeTaches from "./pages/taches/ListeTaches";
 import SuiviCA from "./pages/finance/SuiviCA";
+import EspaceClient from "./pages/client/EspaceClient";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => (
             {/* CLIENT */}
             <Route element={<ProtectedRoute allow={["client", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/client" element={<ClientDashboard />} />
+              <Route path="/client/espace" element={<EspaceClient />} />
               {RoleRoutes({ base: "/client" })}
             </Route>
 

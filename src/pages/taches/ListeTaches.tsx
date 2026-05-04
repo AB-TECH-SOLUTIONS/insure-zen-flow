@@ -9,6 +9,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Plus, Trash2, Download, MessageSquare, RefreshCw, ListTodo, Loader2, CheckCircle2, AlertOctagon, Clock } from "lucide-react";
 
@@ -45,6 +48,20 @@ export default function ListeTaches() {
   const [search, setSearch] = useState("");
   const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
+  // Dialog création
+  const [openNew, setOpenNew] = useState(false);
+  const emptyForm = {
+    title: "",
+    description: "",
+    priority: "med" as Task["priority"],
+    status: "todo" as Task["status"],
+    due_date: new Date().toISOString().slice(0, 10),
+    assigned_to: "",
+    observations: "",
+  };
+  const [form, setForm] = useState(emptyForm);
+  const [creating, setCreating] = useState(false);
+
   const load = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -57,13 +74,31 @@ export default function ListeTaches() {
   };
 
   const loadMembers = async () => {
-    if (!primaryCompanyId) return;
-    // Profils des utilisateurs de la même compagnie
-    const { data } = await supabase
-      .from("profiles")
-      .select("user_id, full_name")
-      .eq("primary_company_id", primaryCompanyId);
-    setMembers((data as Member[]) || []);
+    // 1) Membres de la compagnie principale
+    let list: Member[] = [];
+    if (primaryCompanyId) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("user_id, full_name")
+        .eq("primary_company_id", primaryCompanyId);
+      list = (data as Member[]) || [];
+    }
+    // 2) Fallback : si vide ou peu de membres, on charge tous les profils internes
+    if (list.length < 2) {
+      const { data: all } = await supabase
+        .from("profiles")
+        .select("user_id, full_name")
+        .order("full_name", { ascending: true })
+        .limit(100);
+      const map = new Map<string, Member>();
+      [...list, ...((all as Member[]) || [])].forEach(m => { if (!map.has(m.user_id)) map.set(m.user_id, m); });
+      list = Array.from(map.values());
+    }
+    // 3) Toujours inclure l'utilisateur courant
+    if (user && !list.some(m => m.user_id === user.id)) {
+      list.unshift({ user_id: user.id, full_name: user.email?.split("@")[0] || "Moi" });
+    }
+    setMembers(list);
   };
 
   useEffect(() => {
@@ -101,33 +136,41 @@ export default function ListeTaches() {
     return { total, done, wip, blocked, overdue, pct };
   }, [tasks]);
 
-  const addTask = async () => {
+  const openNewDialog = () => {
+    setForm({ ...emptyForm, assigned_to: user?.id || "" });
+    setOpenNew(true);
+  };
+
+  const submitNew = async () => {
     if (!user) { toast.error("Utilisateur non connecté"); return; }
+    if (!form.title.trim()) { toast.error("Donnez un titre à la tâche"); return; }
+    setCreating(true);
     let companyId = primaryCompanyId;
     if (!companyId) {
-      // Fallback : on prend la 1ère compagnie disponible et on l'attache au profil
       const { data: c } = await supabase.from("companies").select("id").limit(1).maybeSingle();
-      if (!c?.id) { toast.error("Aucune compagnie disponible. Contactez l'administrateur."); return; }
+      if (!c?.id) { setCreating(false); toast.error("Aucune compagnie disponible. Contactez l'administrateur."); return; }
       companyId = c.id;
       await supabase.from("profiles").update({ primary_company_id: companyId }).eq("user_id", user.id);
-      toast.info("Compagnie associée à votre profil");
     }
-    const today = new Date().toISOString().slice(0, 10);
     const { data, error } = await supabase
       .from("tasks")
       .insert({
         company_id: companyId,
-        title: "Nouvelle tâche",
-        priority: "med",
-        status: "todo",
-        due_date: today,
+        title: form.title.trim(),
+        description: form.description || null,
+        priority: form.priority,
+        status: form.status,
+        due_date: form.due_date || null,
+        assigned_to: form.assigned_to || user.id,
+        observations: form.observations || null,
         created_by: user.id,
-        assigned_to: user.id,
       })
       .select()
       .single();
+    setCreating(false);
     if (error) { toast.error(error.message); return; }
     setTasks(prev => [data as Task, ...prev]);
+    setOpenNew(false);
     toast.success("Tâche créée");
   };
 
@@ -203,10 +246,74 @@ export default function ListeTaches() {
             <Button variant="outline" size="sm" onClick={load}><RefreshCw className="h-4 w-4 mr-1" />Sync</Button>
             <Button variant="outline" size="sm" onClick={exportCSV}><Download className="h-4 w-4 mr-1" />CSV</Button>
             <Button variant="outline" size="sm" onClick={copyWhatsApp}><MessageSquare className="h-4 w-4 mr-1" />WhatsApp</Button>
-            <Button size="sm" onClick={addTask}><Plus className="h-4 w-4 mr-1" />Nouvelle tâche</Button>
+            <Button size="sm" onClick={openNewDialog}><Plus className="h-4 w-4 mr-1" />Nouvelle tâche</Button>
           </>
         }
       />
+
+      <Dialog open={openNew} onOpenChange={setOpenNew}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Nouvelle tâche</DialogTitle>
+            <DialogDescription>Renseignez les détails avant de créer la tâche.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>Intitulé *</Label>
+              <Input autoFocus value={form.title} onChange={e => setForm(s => ({ ...s, title: e.target.value }))} placeholder="Ex. Relancer client X pour renouvellement" />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea rows={2} value={form.description} onChange={e => setForm(s => ({ ...s, description: e.target.value }))} placeholder="Contexte ou objectif" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Responsable</Label>
+                <Select value={form.assigned_to} onValueChange={v => setForm(s => ({ ...s, assigned_to: v }))}>
+                  <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                  <SelectContent>
+                    {members.length === 0 && <SelectItem value="__none" disabled>Aucun membre disponible</SelectItem>}
+                    {members.map(m => <SelectItem key={m.user_id} value={m.user_id}>{m.full_name || "Membre"}{m.user_id === user?.id ? " (moi)" : ""}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Échéance</Label>
+                <Input type="date" value={form.due_date} onChange={e => setForm(s => ({ ...s, due_date: e.target.value }))} />
+              </div>
+              <div>
+                <Label>Priorité</Label>
+                <Select value={form.priority} onValueChange={v => setForm(s => ({ ...s, priority: v as Task["priority"] }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(PRIO_LABEL) as Task["priority"][]).map(p => <SelectItem key={p} value={p}>{PRIO_LABEL[p]}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Statut</Label>
+                <Select value={form.status} onValueChange={v => setForm(s => ({ ...s, status: v as Task["status"] }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(STATUS_LABEL) as Task["status"][]).map(s => <SelectItem key={s} value={s}>{STATUS_LABEL[s]}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label>Observations</Label>
+              <Textarea rows={2} value={form.observations} onChange={e => setForm(s => ({ ...s, observations: e.target.value }))} placeholder="Notes additionnelles" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenNew(false)}>Annuler</Button>
+            <Button onClick={submitNew} disabled={creating}>
+              {creating ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Plus className="h-4 w-4 mr-1" />}
+              Créer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
         <StatCard label="Total" value={stats.total} icon={ListTodo} />

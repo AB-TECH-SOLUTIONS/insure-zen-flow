@@ -19,6 +19,7 @@ const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
   client: [
     { label: "Espace client", items: [
       { title: "Tableau de bord", url: "/client", icon: LayoutDashboard },
+      { title: "Mon espace", url: "/client/espace", icon: Briefcase },
       { title: "Mes cotations", url: "/client/cotations", icon: FileText },
       { title: "Mes contrats", url: "/client/contrats", icon: FileCheck },
       { title: "Sinistres", url: "/client/sinistres", icon: AlertTriangle },

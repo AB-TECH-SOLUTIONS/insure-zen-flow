@@ -6,7 +6,7 @@ import {
 import {
   LayoutDashboard, FileText, Users, Car, FileCheck, AlertTriangle, CreditCard,
   MessagesSquare, Settings, Building2, ShieldCheck, ScrollText, BarChart3, Stamp,
-  UserCog, Plus, Database, ListTodo, LineChart, Briefcase, Wallet, Wrench,
+  UserCog, Plus, Database, ListTodo, LineChart, Briefcase,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import type { AppRole } from "@/types/roles";

@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 
 type Item = { title: string; url: string; icon: any };
 
-const NAV: Record<AppRole, { label: string; items: Item[] }[]> = {
+const NAV: Partial<Record<AppRole, { label: string; items: Item[] }[]>> = {
   client: [
     { label: "Espace client", items: [
       { title: "Tableau de bord", url: "/client", icon: LayoutDashboard },

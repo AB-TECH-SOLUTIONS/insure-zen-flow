@@ -37,6 +37,9 @@ import ImportExport from "./pages/import-export/ImportExport";
 import ListeTaches from "./pages/taches/ListeTaches";
 import SuiviCA from "./pages/finance/SuiviCA";
 import EspaceClient from "./pages/client/EspaceClient";
+import Equipe from "./pages/equipe/Equipe";
+import AcceptInvitation from "./pages/invitation/AcceptInvitation";
+import Logs from "./pages/admin/Logs";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +67,7 @@ const RoleRoutes = ({ base }: { base: string }) => (
     <Route path={`${base}/import-export`} element={<ImportExport />} />
     <Route path={`${base}/taches`} element={<ListeTaches />} />
     <Route path={`${base}/suivi-ca`} element={<SuiviCA />} />
+    <Route path={`${base}/equipe`} element={<Equipe />} />
   </>
 );
 
@@ -77,6 +81,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/invitation/:token" element={<AcceptInvitation />} />
 
             {/* CLIENT */}
             <Route element={<ProtectedRoute allow={["client", "super_admin"]}><AppLayout /></ProtectedRoute>}>
@@ -117,7 +122,7 @@ const App = () => (
               <Route path="/admin/compagnies" element={<Stub title="Compagnies" sprint="Sprint 2" />} />
               <Route path="/admin/utilisateurs" element={<Stub title="Utilisateurs" sprint="Sprint 2" />} />
               <Route path="/admin/roles" element={<Stub title="Rôles & accès" sprint="Sprint 2" />} />
-              <Route path="/admin/logs" element={<Stub title="Journaux" sprint="Sprint 5" />} />
+              <Route path="/admin/logs" element={<Logs />} />
               <Route path="/admin/parametres" element={<Stub title="Paramètres" sprint="Sprint 2" />} />
             </Route>
 

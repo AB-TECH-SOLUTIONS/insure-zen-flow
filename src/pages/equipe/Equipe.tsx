@@ -140,7 +140,7 @@ export default function Equipe() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Mon équipe" subtitle="Départements, postes, collaborateurs et invitations" />
+      <PageHeader title="Mon équipe" description="Départements, postes, collaborateurs et invitations" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Stat label="Collaborateurs actifs" value={stats.members} />

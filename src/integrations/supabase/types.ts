@@ -100,6 +100,59 @@ export type Database = {
         }
         Relationships: []
       }
+      bordereaux: {
+        Row: {
+          company_id: string
+          created_at: string
+          generated_at: string
+          generated_by: string | null
+          id: string
+          pdf_url: string | null
+          periode_annee: number
+          periode_mois: number
+          total_contrats: number
+          total_prime_nette: number
+          total_prime_ttc: number
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          pdf_url?: string | null
+          periode_annee: number
+          periode_mois: number
+          total_contrats?: number
+          total_prime_nette?: number
+          total_prime_ttc?: number
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          pdf_url?: string | null
+          periode_annee?: number
+          periode_mois?: number
+          total_contrats?: number
+          total_prime_nette?: number
+          total_prime_ttc?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bordereaux_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       broker_company_access: {
         Row: {
           broker_user_id: string
@@ -510,6 +563,8 @@ export type Database = {
           prime_nette: number | null
           quote_id: string | null
           reduction: number | null
+          renewal_status: string
+          renewed_from_id: string | null
           source_company: string | null
           start_date: string
           status: Database["public"]["Enums"]["contract_status"]
@@ -536,6 +591,8 @@ export type Database = {
           prime_nette?: number | null
           quote_id?: string | null
           reduction?: number | null
+          renewal_status?: string
+          renewed_from_id?: string | null
           source_company?: string | null
           start_date: string
           status?: Database["public"]["Enums"]["contract_status"]
@@ -562,6 +619,8 @@ export type Database = {
           prime_nette?: number | null
           quote_id?: string | null
           reduction?: number | null
+          renewal_status?: string
+          renewed_from_id?: string | null
           source_company?: string | null
           start_date?: string
           status?: Database["public"]["Enums"]["contract_status"]
@@ -589,6 +648,13 @@ export type Database = {
             columns: ["quote_id"]
             isOneToOne: false
             referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_renewed_from_id_fkey"
+            columns: ["renewed_from_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
         ]
@@ -891,6 +957,7 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          is_active: boolean
           phone: string | null
           primary_company_id: string | null
           updated_at: string
@@ -901,6 +968,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          is_active?: boolean
           phone?: string | null
           primary_company_id?: string | null
           updated_at?: string
@@ -911,6 +979,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          is_active?: boolean
           phone?: string | null
           primary_company_id?: string | null
           updated_at?: string

@@ -37,6 +37,10 @@ import ImportExport from "./pages/import-export/ImportExport";
 import ListeTaches from "./pages/taches/ListeTaches";
 import SuiviCA from "./pages/finance/SuiviCA";
 import EspaceClient from "./pages/client/EspaceClient";
+import CotationAutoClient from "./pages/client/CotationAutoClient";
+import CotationVoyageClient from "./pages/client/CotationVoyageClient";
+import MesAccesCompagnies from "./pages/courtier/MesAccesCompagnies";
+import DemandesCourtiers from "./pages/assureur/DemandesCourtiers";
 import Equipe from "./pages/equipe/Equipe";
 import AcceptInvitation from "./pages/invitation/AcceptInvitation";
 import Logs from "./pages/admin/Logs";
@@ -87,6 +91,8 @@ const App = () => (
             <Route element={<ProtectedRoute allow={["client", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/client" element={<ClientDashboard />} />
               <Route path="/client/espace" element={<EspaceClient />} />
+              <Route path="/client/cotations/nouvelle/auto" element={<CotationAutoClient />} />
+              <Route path="/client/cotations/nouvelle/voyage" element={<CotationVoyageClient />} />
               {RoleRoutes({ base: "/client" })}
             </Route>
 
@@ -102,7 +108,7 @@ const App = () => (
             <Route element={<ProtectedRoute allow={["courtier", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/courtier" element={<CourtierDashboard />} />
               {RoleRoutes({ base: "/courtier" })}
-              <Route path="/courtier/compagnies" element={<Stub title="Mes accès compagnies" sprint="Sprint 2" />} />
+              <Route path="/courtier/compagnies" element={<MesAccesCompagnies />} />
             </Route>
 
             {/* ASSUREUR */}
@@ -111,7 +117,7 @@ const App = () => (
               {RoleRoutes({ base: "/assureur" })}
               <Route path="/assureur/portefeuille" element={<Stub title="Portefeuille" sprint="Sprint 2" />} />
               <Route path="/assureur/reseau" element={<Stub title="Réseau" sprint="Sprint 2" />} />
-              <Route path="/assureur/demandes-courtiers" element={<Stub title="Demandes courtiers" sprint="Sprint 2" />} />
+              <Route path="/assureur/demandes-courtiers" element={<DemandesCourtiers />} />
               <Route path="/assureur/attestations" element={<StockAttestations />} />
             </Route>
 

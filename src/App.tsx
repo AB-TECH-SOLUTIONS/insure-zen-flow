@@ -115,8 +115,8 @@ const App = () => (
             <Route element={<ProtectedRoute allow={["assureur", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/assureur" element={<AssureurDashboard />} />
               {RoleRoutes({ base: "/assureur" })}
-              <Route path="/assureur/portefeuille" element={<Stub title="Portefeuille" sprint="Sprint 2" />} />
-              <Route path="/assureur/reseau" element={<Stub title="Réseau" sprint="Sprint 2" />} />
+              <Route path="/assureur/portefeuille" element={<Portefeuille />} />
+              <Route path="/assureur/reseau" element={<Reseau />} />
               <Route path="/assureur/demandes-courtiers" element={<DemandesCourtiers />} />
               <Route path="/assureur/attestations" element={<StockAttestations />} />
             </Route>
@@ -125,8 +125,8 @@ const App = () => (
             <Route element={<ProtectedRoute allow={["super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/admin" element={<AdminDashboard />} />
               {RoleRoutes({ base: "/admin" })}
-              <Route path="/admin/compagnies" element={<Stub title="Compagnies" sprint="Sprint 2" />} />
-              <Route path="/admin/utilisateurs" element={<Stub title="Utilisateurs" sprint="Sprint 2" />} />
+              <Route path="/admin/compagnies" element={<Compagnies />} />
+              <Route path="/admin/utilisateurs" element={<Utilisateurs />} />
               <Route path="/admin/roles" element={<Stub title="Rôles & accès" sprint="Sprint 2" />} />
               <Route path="/admin/logs" element={<Logs />} />
               <Route path="/admin/parametres" element={<Stub title="Paramètres" sprint="Sprint 2" />} />

@@ -44,6 +44,12 @@ import DemandesCourtiers from "./pages/assureur/DemandesCourtiers";
 import Equipe from "./pages/equipe/Equipe";
 import AcceptInvitation from "./pages/invitation/AcceptInvitation";
 import Logs from "./pages/admin/Logs";
+import Renouvellements from "./pages/contrats/Renouvellements";
+import Bordereaux from "./pages/finance/Bordereaux";
+import Compagnies from "./pages/admin/Compagnies";
+import Utilisateurs from "./pages/admin/Utilisateurs";
+import Portefeuille from "./pages/assureur/Portefeuille";
+import Reseau from "./pages/assureur/Reseau";
 
 const queryClient = new QueryClient();
 

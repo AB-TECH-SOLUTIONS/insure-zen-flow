@@ -44,6 +44,12 @@ import DemandesCourtiers from "./pages/assureur/DemandesCourtiers";
 import Equipe from "./pages/equipe/Equipe";
 import AcceptInvitation from "./pages/invitation/AcceptInvitation";
 import Logs from "./pages/admin/Logs";
+import Renouvellements from "./pages/contrats/Renouvellements";
+import Bordereaux from "./pages/finance/Bordereaux";
+import Compagnies from "./pages/admin/Compagnies";
+import Utilisateurs from "./pages/admin/Utilisateurs";
+import Portefeuille from "./pages/assureur/Portefeuille";
+import Reseau from "./pages/assureur/Reseau";
 
 const queryClient = new QueryClient();
 
@@ -115,8 +121,8 @@ const App = () => (
             <Route element={<ProtectedRoute allow={["assureur", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/assureur" element={<AssureurDashboard />} />
               {RoleRoutes({ base: "/assureur" })}
-              <Route path="/assureur/portefeuille" element={<Stub title="Portefeuille" sprint="Sprint 2" />} />
-              <Route path="/assureur/reseau" element={<Stub title="Réseau" sprint="Sprint 2" />} />
+              <Route path="/assureur/portefeuille" element={<Portefeuille />} />
+              <Route path="/assureur/reseau" element={<Reseau />} />
               <Route path="/assureur/demandes-courtiers" element={<DemandesCourtiers />} />
               <Route path="/assureur/attestations" element={<StockAttestations />} />
             </Route>
@@ -125,8 +131,8 @@ const App = () => (
             <Route element={<ProtectedRoute allow={["super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/admin" element={<AdminDashboard />} />
               {RoleRoutes({ base: "/admin" })}
-              <Route path="/admin/compagnies" element={<Stub title="Compagnies" sprint="Sprint 2" />} />
-              <Route path="/admin/utilisateurs" element={<Stub title="Utilisateurs" sprint="Sprint 2" />} />
+              <Route path="/admin/compagnies" element={<Compagnies />} />
+              <Route path="/admin/utilisateurs" element={<Utilisateurs />} />
               <Route path="/admin/roles" element={<Stub title="Rôles & accès" sprint="Sprint 2" />} />
               <Route path="/admin/logs" element={<Logs />} />
               <Route path="/admin/parametres" element={<Stub title="Paramètres" sprint="Sprint 2" />} />

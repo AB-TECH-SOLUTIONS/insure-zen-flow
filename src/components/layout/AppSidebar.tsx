@@ -7,7 +7,7 @@ import {
   LayoutDashboard, FileText, Users, Car, FileCheck, AlertTriangle, CreditCard,
   MessagesSquare, Settings, Building2, ShieldCheck, ScrollText, BarChart3, Stamp,
   UserCog, Plus, Database, ListTodo, LineChart, Briefcase,
-  Users2, ScrollText as ScrollIcon,
+  Users2, ScrollText as ScrollIcon, RefreshCw, FileSpreadsheet,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import type { AppRole } from "@/types/roles";
@@ -38,6 +38,7 @@ const NAV: Partial<Record<AppRole, { label: string; items: Item[] }[]>> = {
     { label: "Production", items: [
       { title: "Cotations", url: "/agent/cotations", icon: FileText },
       { title: "Contrats", url: "/agent/contrats", icon: FileCheck },
+      { title: "Renouvellements", url: "/agent/renouvellements", icon: RefreshCw },
       { title: "Clients", url: "/agent/clients", icon: Users },
       { title: "Véhicules", url: "/agent/vehicules", icon: Car },
     ]},
@@ -62,6 +63,7 @@ const NAV: Partial<Record<AppRole, { label: string; items: Item[] }[]>> = {
     { label: "Production", items: [
       { title: "Cotations", url: "/courtier/cotations", icon: FileText },
       { title: "Contrats", url: "/courtier/contrats", icon: FileCheck },
+      { title: "Renouvellements", url: "/courtier/renouvellements", icon: RefreshCw },
       { title: "Clients", url: "/courtier/clients", icon: Users },
     ]},
     { label: "Encaissements & sinistres", items: [
@@ -78,12 +80,14 @@ const NAV: Partial<Record<AppRole, { label: string; items: Item[] }[]>> = {
       { title: "Tableau de bord", url: "/assureur", icon: LayoutDashboard },
       { title: "Suivi CA", url: "/assureur/suivi-ca", icon: LineChart },
       { title: "Portefeuille", url: "/assureur/portefeuille", icon: BarChart3 },
+      { title: "Bordereaux", url: "/assureur/bordereaux", icon: FileSpreadsheet },
       { title: "Tâches équipe", url: "/assureur/taches", icon: ListTodo },
       { title: "Mon équipe", url: "/assureur/equipe", icon: Users2 },
     ]},
     { label: "Production", items: [
       { title: "Cotations", url: "/assureur/cotations", icon: FileText },
       { title: "Contrats", url: "/assureur/contrats", icon: FileCheck },
+      { title: "Renouvellements", url: "/assureur/renouvellements", icon: RefreshCw },
       { title: "Clients", url: "/assureur/clients", icon: Users },
     ]},
     { label: "Réseau", items: [

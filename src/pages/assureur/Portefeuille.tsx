@@ -43,10 +43,10 @@ export default function Portefeuille() {
     <div className="space-y-6">
       <PageHeader title="Portefeuille" description="Vue 360° de votre compagnie : production, sinistralité, clients." />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Contrats" value={String(stats.contrats)} icon={FileCheck} />
-        <StatCard title="Chiffre d'affaires" value={formatFCFA(stats.ca)} icon={TrendingUp} />
-        <StatCard title="Sinistres" value={String(stats.sinistres)} icon={AlertTriangle} />
-        <StatCard title="Clients" value={String(stats.clients)} icon={Users} />
+        <StatCard label="Contrats" value={stats.contrats} icon={FileCheck} />
+        <StatCard label="Chiffre d'affaires" value={formatFCFA(stats.ca)} icon={TrendingUp} />
+        <StatCard label="Sinistres" value={stats.sinistres} icon={AlertTriangle} />
+        <StatCard label="Clients" value={stats.clients} icon={Users} />
       </div>
       <Card className="p-6">
         <h3 className="font-display font-semibold mb-4">Répartition par produit</h3>

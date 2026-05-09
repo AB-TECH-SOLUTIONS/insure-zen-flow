@@ -57,6 +57,17 @@ import ExpertDashboard from "./pages/dashboards/ExpertDashboard";
 import HopitalDashboard from "./pages/dashboards/HopitalDashboard";
 import PharmacieDashboard from "./pages/dashboards/PharmacieDashboard";
 import AutoriteDashboard from "./pages/dashboards/AutoriteDashboard";
+import DossiersSinistres from "./pages/garage/DossiersSinistres";
+import Factures from "./pages/garage/Factures";
+import Missions from "./pages/expert/Missions";
+import RapportExpertise from "./pages/expert/RapportExpertise";
+import NouveauDossier from "./pages/hopital/NouveauDossier";
+import ListeDossiers from "./pages/hopital/ListeDossiers";
+import NouvelleDispensation from "./pages/pharmacie/NouvelleDispensation";
+import Historique from "./pages/pharmacie/Historique";
+import DepotDocument from "./pages/autorite/DepotDocument";
+import MesDocuments from "./pages/autorite/MesDocuments";
+import VerificationAttestation from "./pages/autorite/VerificationAttestation";
 
 const queryClient = new QueryClient();
 
@@ -154,30 +165,41 @@ const App = () => (
             {/* GARAGE */}
             <Route element={<ProtectedRoute allow={["garage", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/garage" element={<GarageDashboard />} />
+              <Route path="/garage/sinistres" element={<DossiersSinistres />} />
+              <Route path="/garage/factures" element={<Factures />} />
               <Route path="/garage/messages" element={<Messagerie />} />
             </Route>
 
             {/* EXPERT */}
             <Route element={<ProtectedRoute allow={["expert", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/expert" element={<ExpertDashboard />} />
+              <Route path="/expert/missions" element={<Missions />} />
+              <Route path="/expert/rapport/:claimId" element={<RapportExpertise />} />
               <Route path="/expert/messages" element={<Messagerie />} />
             </Route>
 
             {/* HOPITAL */}
             <Route element={<ProtectedRoute allow={["hopital", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/hopital" element={<HopitalDashboard />} />
+              <Route path="/hopital/dossiers" element={<ListeDossiers />} />
+              <Route path="/hopital/dossiers/nouveau" element={<NouveauDossier />} />
               <Route path="/hopital/messages" element={<Messagerie />} />
             </Route>
 
             {/* PHARMACIE */}
             <Route element={<ProtectedRoute allow={["pharmacie", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/pharmacie" element={<PharmacieDashboard />} />
+              <Route path="/pharmacie/dispensation" element={<NouvelleDispensation />} />
+              <Route path="/pharmacie/historique" element={<Historique />} />
               <Route path="/pharmacie/messages" element={<Messagerie />} />
             </Route>
 
             {/* AUTORITE */}
             <Route element={<ProtectedRoute allow={["autorite", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/autorite" element={<AutoriteDashboard />} />
+              <Route path="/autorite/depot" element={<DepotDocument />} />
+              <Route path="/autorite/documents" element={<MesDocuments />} />
+              <Route path="/autorite/verification" element={<VerificationAttestation />} />
               <Route path="/autorite/messages" element={<Messagerie />} />
             </Route>
 

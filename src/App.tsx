@@ -48,8 +48,15 @@ import Renouvellements from "./pages/contrats/Renouvellements";
 import Bordereaux from "./pages/finance/Bordereaux";
 import Compagnies from "./pages/admin/Compagnies";
 import Utilisateurs from "./pages/admin/Utilisateurs";
+import Roles from "./pages/admin/Roles";
+import Parametres from "./pages/admin/Parametres";
 import Portefeuille from "./pages/assureur/Portefeuille";
 import Reseau from "./pages/assureur/Reseau";
+import GarageDashboard from "./pages/dashboards/GarageDashboard";
+import ExpertDashboard from "./pages/dashboards/ExpertDashboard";
+import HopitalDashboard from "./pages/dashboards/HopitalDashboard";
+import PharmacieDashboard from "./pages/dashboards/PharmacieDashboard";
+import AutoriteDashboard from "./pages/dashboards/AutoriteDashboard";
 
 const queryClient = new QueryClient();
 
@@ -108,6 +115,8 @@ const App = () => (
               {RoleRoutes({ base: "/agent" })}
               <Route path="/agent/quotes" element={<ListeCotations basePath="/agent" />} />
               <Route path="/agent/attestations" element={<StockAttestations />} />
+              <Route path="/agent/renouvellements" element={<Renouvellements basePath="/agent" />} />
+              <Route path="/agent/bordereaux" element={<Bordereaux />} />
             </Route>
 
             {/* COURTIER */}
@@ -115,6 +124,8 @@ const App = () => (
               <Route path="/courtier" element={<CourtierDashboard />} />
               {RoleRoutes({ base: "/courtier" })}
               <Route path="/courtier/compagnies" element={<MesAccesCompagnies />} />
+              <Route path="/courtier/renouvellements" element={<Renouvellements basePath="/courtier" />} />
+              <Route path="/courtier/bordereaux" element={<Bordereaux />} />
             </Route>
 
             {/* ASSUREUR */}
@@ -125,6 +136,8 @@ const App = () => (
               <Route path="/assureur/reseau" element={<Reseau />} />
               <Route path="/assureur/demandes-courtiers" element={<DemandesCourtiers />} />
               <Route path="/assureur/attestations" element={<StockAttestations />} />
+              <Route path="/assureur/renouvellements" element={<Renouvellements basePath="/assureur" />} />
+              <Route path="/assureur/bordereaux" element={<Bordereaux />} />
             </Route>
 
             {/* SUPER ADMIN */}
@@ -133,9 +146,39 @@ const App = () => (
               {RoleRoutes({ base: "/admin" })}
               <Route path="/admin/compagnies" element={<Compagnies />} />
               <Route path="/admin/utilisateurs" element={<Utilisateurs />} />
-              <Route path="/admin/roles" element={<Stub title="Rôles & accès" sprint="Sprint 2" />} />
+              <Route path="/admin/roles" element={<Roles />} />
               <Route path="/admin/logs" element={<Logs />} />
-              <Route path="/admin/parametres" element={<Stub title="Paramètres" sprint="Sprint 2" />} />
+              <Route path="/admin/parametres" element={<Parametres />} />
+            </Route>
+
+            {/* GARAGE */}
+            <Route element={<ProtectedRoute allow={["garage", "super_admin"]}><AppLayout /></ProtectedRoute>}>
+              <Route path="/garage" element={<GarageDashboard />} />
+              <Route path="/garage/messages" element={<Messagerie />} />
+            </Route>
+
+            {/* EXPERT */}
+            <Route element={<ProtectedRoute allow={["expert", "super_admin"]}><AppLayout /></ProtectedRoute>}>
+              <Route path="/expert" element={<ExpertDashboard />} />
+              <Route path="/expert/messages" element={<Messagerie />} />
+            </Route>
+
+            {/* HOPITAL */}
+            <Route element={<ProtectedRoute allow={["hopital", "super_admin"]}><AppLayout /></ProtectedRoute>}>
+              <Route path="/hopital" element={<HopitalDashboard />} />
+              <Route path="/hopital/messages" element={<Messagerie />} />
+            </Route>
+
+            {/* PHARMACIE */}
+            <Route element={<ProtectedRoute allow={["pharmacie", "super_admin"]}><AppLayout /></ProtectedRoute>}>
+              <Route path="/pharmacie" element={<PharmacieDashboard />} />
+              <Route path="/pharmacie/messages" element={<Messagerie />} />
+            </Route>
+
+            {/* AUTORITE */}
+            <Route element={<ProtectedRoute allow={["autorite", "super_admin"]}><AppLayout /></ProtectedRoute>}>
+              <Route path="/autorite" element={<AutoriteDashboard />} />
+              <Route path="/autorite/messages" element={<Messagerie />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

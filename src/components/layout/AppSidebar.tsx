@@ -8,6 +8,7 @@ import {
   MessagesSquare, Settings, Building2, ShieldCheck, ScrollText, BarChart3, Stamp,
   UserCog, Plus, Database, ListTodo, LineChart, Briefcase,
   Users2, ScrollText as ScrollIcon, RefreshCw, FileSpreadsheet,
+  Upload, FolderOpen,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import type { AppRole } from "@/types/roles";
@@ -121,32 +122,64 @@ const NAV: Partial<Record<AppRole, { label: string; items: Item[] }[]>> = {
     ]},
   ],
   garage: [
-    { label: "Espace garage", items: [
+    { label: "Tableau de bord", items: [
       { title: "Tableau de bord", url: "/garage", icon: LayoutDashboard },
+    ]},
+    { label: "Sinistres", items: [
+      { title: "Dossiers sinistres", url: "/garage/sinistres", icon: AlertTriangle },
+      { title: "Mes factures", url: "/garage/factures", icon: FileText },
+    ]},
+    { label: "Échanges", items: [
       { title: "Messagerie", url: "/garage/messages", icon: MessagesSquare },
     ]},
   ],
   expert: [
-    { label: "Espace expert", items: [
+    { label: "Tableau de bord", items: [
       { title: "Tableau de bord", url: "/expert", icon: LayoutDashboard },
+    ]},
+    { label: "Missions", items: [
+      { title: "Mes missions", url: "/expert/missions", icon: Briefcase },
+    ]},
+    { label: "Échanges", items: [
       { title: "Messagerie", url: "/expert/messages", icon: MessagesSquare },
     ]},
   ],
   hopital: [
-    { label: "Espace hospitalier", items: [
+    { label: "Tableau de bord", items: [
       { title: "Tableau de bord", url: "/hopital", icon: LayoutDashboard },
+    ]},
+    { label: "Tiers payant", items: [
+      { title: "Nouveau dossier", url: "/hopital/dossiers/nouveau", icon: Plus },
+      { title: "Mes dossiers", url: "/hopital/dossiers", icon: FileCheck },
+    ]},
+    { label: "Échanges", items: [
       { title: "Messagerie", url: "/hopital/messages", icon: MessagesSquare },
     ]},
   ],
   pharmacie: [
-    { label: "Espace pharmacie", items: [
+    { label: "Tableau de bord", items: [
       { title: "Tableau de bord", url: "/pharmacie", icon: LayoutDashboard },
+    ]},
+    { label: "Tiers payant", items: [
+      { title: "Nouvelle dispensation", url: "/pharmacie/dispensation", icon: Plus },
+      { title: "Historique", url: "/pharmacie/historique", icon: ScrollText },
+    ]},
+    { label: "Échanges", items: [
       { title: "Messagerie", url: "/pharmacie/messages", icon: MessagesSquare },
     ]},
   ],
   autorite: [
-    { label: "Espace autorité", items: [
+    { label: "Tableau de bord", items: [
       { title: "Tableau de bord", url: "/autorite", icon: LayoutDashboard },
+    ]},
+    { label: "Documents", items: [
+      { title: "Déposer un document", url: "/autorite/depot", icon: Upload },
+      { title: "Mes documents", url: "/autorite/documents", icon: FolderOpen },
+    ]},
+    { label: "Contrôle", items: [
+      { title: "Vérifier une attestation", url: "/autorite/verification", icon: ShieldCheck },
+    ]},
+    { label: "Échanges", items: [
       { title: "Messagerie", url: "/autorite/messages", icon: MessagesSquare },
     ]},
   ],

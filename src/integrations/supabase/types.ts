@@ -237,7 +237,10 @@ export type Database = {
       }
       claims: {
         Row: {
+          assigned_expert_id: string | null
+          assigned_garage_id: string | null
           attachments: Json
+          circonstances: string | null
           claim_number: string
           client_id: string
           company_id: string
@@ -246,14 +249,20 @@ export type Database = {
           declared_by: string | null
           description: string | null
           estimated_amount: number | null
+          expert_notes: string | null
+          garage_notes: string | null
           id: string
+          lieu_sinistre: string | null
           occurred_at: string
           settled_amount: number | null
           status: Database["public"]["Enums"]["claim_status"]
           updated_at: string
         }
         Insert: {
+          assigned_expert_id?: string | null
+          assigned_garage_id?: string | null
           attachments?: Json
+          circonstances?: string | null
           claim_number?: string
           client_id: string
           company_id: string
@@ -262,14 +271,20 @@ export type Database = {
           declared_by?: string | null
           description?: string | null
           estimated_amount?: number | null
+          expert_notes?: string | null
+          garage_notes?: string | null
           id?: string
+          lieu_sinistre?: string | null
           occurred_at: string
           settled_amount?: number | null
           status?: Database["public"]["Enums"]["claim_status"]
           updated_at?: string
         }
         Update: {
+          assigned_expert_id?: string | null
+          assigned_garage_id?: string | null
           attachments?: Json
+          circonstances?: string | null
           claim_number?: string
           client_id?: string
           company_id?: string
@@ -278,7 +293,10 @@ export type Database = {
           declared_by?: string | null
           description?: string | null
           estimated_amount?: number | null
+          expert_notes?: string | null
+          garage_notes?: string | null
           id?: string
+          lieu_sinistre?: string | null
           occurred_at?: string
           settled_amount?: number | null
           status?: Database["public"]["Enums"]["claim_status"]
@@ -686,6 +704,187 @@ export type Database = {
         }
         Relationships: []
       }
+      expertise_reports: {
+        Row: {
+          claim_id: string
+          cout_reparation: number | null
+          created_at: string
+          date_expertise: string | null
+          etat_vehicule: string
+          expert_user_id: string
+          file_urls: Json
+          id: string
+          lieu: string | null
+          nature_dommages: string | null
+          recommandation: string | null
+          responsabilite_assure: number
+          statut: string
+          updated_at: string
+          valeur_apres: number | null
+          valeur_avant: number | null
+        }
+        Insert: {
+          claim_id: string
+          cout_reparation?: number | null
+          created_at?: string
+          date_expertise?: string | null
+          etat_vehicule?: string
+          expert_user_id: string
+          file_urls?: Json
+          id?: string
+          lieu?: string | null
+          nature_dommages?: string | null
+          recommandation?: string | null
+          responsabilite_assure?: number
+          statut?: string
+          updated_at?: string
+          valeur_apres?: number | null
+          valeur_avant?: number | null
+        }
+        Update: {
+          claim_id?: string
+          cout_reparation?: number | null
+          created_at?: string
+          date_expertise?: string | null
+          etat_vehicule?: string
+          expert_user_id?: string
+          file_urls?: Json
+          id?: string
+          lieu?: string | null
+          nature_dommages?: string | null
+          recommandation?: string | null
+          responsabilite_assure?: number
+          statut?: string
+          updated_at?: string
+          valeur_apres?: number | null
+          valeur_avant?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expertise_reports_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      garage_quotes: {
+        Row: {
+          claim_id: string
+          created_at: string
+          delai_jours: number | null
+          description: string | null
+          file_urls: Json
+          garage_user_id: string
+          id: string
+          montant_mo: number
+          montant_pieces: number
+          montant_total: number | null
+          statut: string
+          updated_at: string
+        }
+        Insert: {
+          claim_id: string
+          created_at?: string
+          delai_jours?: number | null
+          description?: string | null
+          file_urls?: Json
+          garage_user_id: string
+          id?: string
+          montant_mo?: number
+          montant_pieces?: number
+          montant_total?: number | null
+          statut?: string
+          updated_at?: string
+        }
+        Update: {
+          claim_id?: string
+          created_at?: string
+          delai_jours?: number | null
+          description?: string | null
+          file_urls?: Json
+          garage_user_id?: string
+          id?: string
+          montant_mo?: number
+          montant_pieces?: number
+          montant_total?: number | null
+          statut?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "garage_quotes_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      health_claims: {
+        Row: {
+          client_id: string | null
+          contract_id: string | null
+          created_at: string
+          description: string | null
+          file_urls: Json
+          hopital_user_id: string
+          id: string
+          montant_assurance: number | null
+          montant_soins: number
+          statut: string
+          taux_prise_charge: number
+          type_soin: string
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          contract_id?: string | null
+          created_at?: string
+          description?: string | null
+          file_urls?: Json
+          hopital_user_id: string
+          id?: string
+          montant_assurance?: number | null
+          montant_soins: number
+          statut?: string
+          taux_prise_charge?: number
+          type_soin: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          contract_id?: string | null
+          created_at?: string
+          description?: string | null
+          file_urls?: Json
+          hopital_user_id?: string
+          id?: string
+          montant_assurance?: number | null
+          montant_soins?: number
+          statut?: string
+          taux_prise_charge?: number
+          type_soin?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "health_claims_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "health_claims_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invitations: {
         Row: {
           accepted_at: string | null
@@ -836,6 +1035,63 @@ export type Database = {
         }
         Relationships: []
       }
+      official_documents: {
+        Row: {
+          claim_id: string | null
+          contract_id: string | null
+          corps_unite: string | null
+          created_at: string
+          deposited_by: string
+          document_date: string | null
+          document_type: string
+          file_url: string | null
+          id: string
+          reference_number: string | null
+          resume: string | null
+        }
+        Insert: {
+          claim_id?: string | null
+          contract_id?: string | null
+          corps_unite?: string | null
+          created_at?: string
+          deposited_by: string
+          document_date?: string | null
+          document_type: string
+          file_url?: string | null
+          id?: string
+          reference_number?: string | null
+          resume?: string | null
+        }
+        Update: {
+          claim_id?: string | null
+          contract_id?: string | null
+          corps_unite?: string | null
+          created_at?: string
+          deposited_by?: string
+          document_date?: string | null
+          document_type?: string
+          file_url?: string | null
+          id?: string
+          reference_number?: string | null
+          resume?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "official_documents_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "official_documents_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -909,6 +1165,66 @@ export type Database = {
             columns: ["quote_id"]
             isOneToOne: false
             referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacie_claims: {
+        Row: {
+          client_id: string | null
+          contract_id: string | null
+          created_at: string
+          id: string
+          medicaments: Json
+          montant_assurance: number | null
+          montant_total: number
+          ordonnance_url: string | null
+          pharmacie_user_id: string
+          statut: string
+          taux_remboursement: number
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          contract_id?: string | null
+          created_at?: string
+          id?: string
+          medicaments?: Json
+          montant_assurance?: number | null
+          montant_total: number
+          ordonnance_url?: string | null
+          pharmacie_user_id: string
+          statut?: string
+          taux_remboursement?: number
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          contract_id?: string | null
+          created_at?: string
+          id?: string
+          medicaments?: Json
+          montant_assurance?: number | null
+          montant_total?: number
+          ordonnance_url?: string | null
+          pharmacie_user_id?: string
+          statut?: string
+          taux_remboursement?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacie_claims_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pharmacie_claims_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
         ]

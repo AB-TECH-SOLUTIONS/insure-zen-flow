@@ -30,7 +30,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq("user_id", uid)
       .order("created_at", { ascending: true });
     // priorité au rôle "le plus fort"
-    const order: AppRole[] = ["super_admin", "assureur", "courtier", "agent", "client"];
+    const order: AppRole[] = [
+      "super_admin", "assureur", "courtier", "agent",
+      "garage", "expert", "hopital", "pharmacie", "autorite", "reassureur",
+      "client",
+    ];
     const found = order.find((r) => roles?.some((x) => x.role === r)) ?? null;
     setRole(found);
 

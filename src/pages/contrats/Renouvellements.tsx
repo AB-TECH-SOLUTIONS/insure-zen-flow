@@ -49,16 +49,21 @@ export default function Renouvellements({ basePath }: { basePath: string }) {
     newStart.setDate(newStart.getDate() + 1);
     const newEnd = new Date(newStart);
     newEnd.setFullYear(newEnd.getFullYear() + 1);
+    const validTypes = ["auto", "voyage", "risques_divers"] as const;
+    type ValidType = typeof validTypes[number];
+    const productType: ValidType = (validTypes as readonly string[]).includes(c.type)
+      ? (c.type as ValidType)
+      : "auto";
     const { data: numData, error: numErr } = await supabase.rpc("next_contract_number", {
       _company_id: c.company_id,
-      _product: c.type as "auto" | "voyage" | "risques_divers",
+      _product: productType,
     });
     if (numErr || !numData) { toast.error(numErr?.message ?? "Numéro indisponible"); return; }
     const { data: orig } = await supabase.from("contracts").select("*").eq("id", c.id).maybeSingle();
     if (!orig) return;
     const { error } = await supabase.from("contracts").insert({
       contract_number: numData as string,
-      type: c.type as "auto" | "voyage" | "risques_divers",
+      type: productType,
       status: "actif",
       total_premium: c.total_premium,
       start_date: newStart.toISOString().slice(0, 10),
@@ -74,7 +79,18 @@ export default function Renouvellements({ basePath }: { basePath: string }) {
       reduction: orig.reduction,
     });
     if (error) { toast.error(error.message); return; }
-    await supabase.from("contracts").update({ renewal_status: "renouvele" }).eq("id", c.id);
+    await supabase.from("contracts").update({ renewal_status: "en_cours" }).eq("id", c.id);
+    const { data: u } = await supabase.auth.getUser();
+    await supabase.from("tasks").insert({
+      title: `Renouvellement ${c.contract_number}`,
+      assigned_to: u.user?.id ?? null,
+      due_date: new Date(new Date(c.end_date).getTime() - 15 * 86400000)
+        .toISOString()
+        .split("T")[0],
+      priority: "high",
+      status: "todo",
+      company_id: c.company_id,
+    });
     toast.success(`Contrat renouvelé : ${numData}`);
     load();
   };

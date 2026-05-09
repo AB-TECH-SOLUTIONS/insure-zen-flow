@@ -1462,7 +1462,7 @@ export type Database = {
         | "carte"
       payment_status: "en_attente" | "paye" | "echoue" | "rembourse"
       quote_status: "brouillon" | "envoyee" | "acceptee" | "refusee" | "expiree"
-      quote_type: "auto" | "voyage" | "risques_divers"
+      quote_type: "auto" | "voyage" | "risques_divers" | "vie"
       task_priority: "low" | "med" | "high"
       task_status: "todo" | "wip" | "done" | "blocked"
     }
@@ -1626,7 +1626,7 @@ export const Constants = {
       ],
       payment_status: ["en_attente", "paye", "echoue", "rembourse"],
       quote_status: ["brouillon", "envoyee", "acceptee", "refusee", "expiree"],
-      quote_type: ["auto", "voyage", "risques_divers"],
+      quote_type: ["auto", "voyage", "risques_divers", "vie"],
       task_priority: ["low", "med", "high"],
       task_status: ["todo", "wip", "done", "blocked"],
     },

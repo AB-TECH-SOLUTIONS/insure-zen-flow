@@ -120,6 +120,36 @@ const NAV: Partial<Record<AppRole, { label: string; items: Item[] }[]>> = {
       { title: "Paramètres", url: "/admin/parametres", icon: Settings },
     ]},
   ],
+  garage: [
+    { label: "Espace garage", items: [
+      { title: "Tableau de bord", url: "/garage", icon: LayoutDashboard },
+      { title: "Messagerie", url: "/garage/messages", icon: MessagesSquare },
+    ]},
+  ],
+  expert: [
+    { label: "Espace expert", items: [
+      { title: "Tableau de bord", url: "/expert", icon: LayoutDashboard },
+      { title: "Messagerie", url: "/expert/messages", icon: MessagesSquare },
+    ]},
+  ],
+  hopital: [
+    { label: "Espace hospitalier", items: [
+      { title: "Tableau de bord", url: "/hopital", icon: LayoutDashboard },
+      { title: "Messagerie", url: "/hopital/messages", icon: MessagesSquare },
+    ]},
+  ],
+  pharmacie: [
+    { label: "Espace pharmacie", items: [
+      { title: "Tableau de bord", url: "/pharmacie", icon: LayoutDashboard },
+      { title: "Messagerie", url: "/pharmacie/messages", icon: MessagesSquare },
+    ]},
+  ],
+  autorite: [
+    { label: "Espace autorité", items: [
+      { title: "Tableau de bord", url: "/autorite", icon: LayoutDashboard },
+      { title: "Messagerie", url: "/autorite/messages", icon: MessagesSquare },
+    ]},
+  ],
 };
 
 export function AppSidebar() {

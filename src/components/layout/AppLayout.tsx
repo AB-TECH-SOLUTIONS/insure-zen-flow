@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { LogOut } from "lucide-react";
 import { NotificationBell } from "./NotificationBell";
+import ChatbotWidget from "@/components/chatbot/ChatbotWidget";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuSeparator, DropdownMenuTrigger,
@@ -66,6 +67,7 @@ export default function AppLayout() {
               <Outlet />
             </div>
           </main>
+          <ChatbotWidget />
         </div>
       </div>
     </SidebarProvider>

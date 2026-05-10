@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
-import { Car, Plane, Package, ArrowRight, Lock } from "lucide-react";
+import { Car, Plane, Package, HeartPulse, ArrowRight, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 }
 
 type Produit = {
-  code: "auto" | "voyage" | "rd";
+  code: "auto" | "voyage" | "vie" | "rd";
   title: string;
   description: string;
   icon: typeof Car;
@@ -42,6 +42,14 @@ export default function SelecteurProduit({ basePath }: Props) {
       path: `${basePath}/cotations/nouvelle/voyage`,
     },
     {
+      code: "vie",
+      title: "Assurance Vie",
+      description: "Épargne, décès, retraite, éducation, obsèques.",
+      icon: HeartPulse,
+      available: true,
+      path: `${basePath}/cotations/nouvelle/vie`,
+    },
+    {
       code: "rd",
       title: "Risques Divers",
       description: "Multirisque habitation, professionnel, RC entreprise.",
@@ -59,7 +67,7 @@ export default function SelecteurProduit({ basePath }: Props) {
         description="Choisissez le type de produit à coter."
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {produits.map((p) => {
           const Icon = p.icon;
           return (

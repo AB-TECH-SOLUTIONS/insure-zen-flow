@@ -20,6 +20,7 @@ import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import { PlaceholderPage } from "./components/PlaceholderPage";
 import NouvelleCotationAuto from "./pages/cotations/NouvelleCotationAuto";
 import NouvelleCotationVoyage from "./pages/cotations/NouvelleCotationVoyage";
+import NouvelleCotationVie from "./pages/cotations/NouvelleCotationVie";
 import SelecteurProduit from "./pages/cotations/SelecteurProduit";
 import ListeCotations from "./pages/cotations/ListeCotations";
 import DetailCotation from "./pages/cotations/DetailCotation";
@@ -39,6 +40,7 @@ import SuiviCA from "./pages/finance/SuiviCA";
 import EspaceClient from "./pages/client/EspaceClient";
 import CotationAutoClient from "./pages/client/CotationAutoClient";
 import CotationVoyageClient from "./pages/client/CotationVoyageClient";
+import CotationVieClient from "./pages/client/CotationVieClient";
 import MesAccesCompagnies from "./pages/courtier/MesAccesCompagnies";
 import DemandesCourtiers from "./pages/assureur/DemandesCourtiers";
 import Equipe from "./pages/equipe/Equipe";
@@ -82,6 +84,7 @@ const RoleRoutes = ({ base }: { base: string }) => (
     <Route path={`${base}/cotations/nouvelle`} element={<SelecteurProduit basePath={base} />} />
     <Route path={`${base}/cotations/nouvelle/auto`} element={<NouvelleCotationAuto basePath={base} />} />
     <Route path={`${base}/cotations/nouvelle/voyage`} element={<NouvelleCotationVoyage basePath={base} />} />
+    <Route path={`${base}/cotations/nouvelle/vie`} element={<NouvelleCotationVie basePath={base} />} />
     <Route path={`${base}/cotations/:id`} element={<DetailCotation basePath={base} />} />
     <Route path={`${base}/contrats`} element={<ListeContrats basePath={base} />} />
     <Route path={`${base}/contrats/:id`} element={<DetailContrat basePath={base} />} />
@@ -117,6 +120,7 @@ const App = () => (
               <Route path="/client/espace" element={<EspaceClient />} />
               <Route path="/client/cotations/nouvelle/auto" element={<CotationAutoClient />} />
               <Route path="/client/cotations/nouvelle/voyage" element={<CotationVoyageClient />} />
+              <Route path="/client/cotations/nouvelle/vie" element={<CotationVieClient />} />
               {RoleRoutes({ base: "/client" })}
             </Route>
 

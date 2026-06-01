@@ -53,8 +53,8 @@ export default function DetailSinistre({ basePath }: { basePath: string }) {
     if (!id) return;
     const { data: c } = await supabase.from("claims").select("*").eq("id", id).maybeSingle();
     if (!c) { setLoading(false); return; }
-    setClaim(c as Claim);
-    setNotes((c as Claim).handler_notes ?? "");
+    setClaim(c as unknown as Claim);
+    setNotes(((c as unknown as Claim).handler_notes) ?? "");
 
     const [{ data: cli }, { data: ct }, { data: comp }, { data: ev }, { data: exp }, { data: gq }, { data: od }] = await Promise.all([
       supabase.from("clients").select("full_name").eq("id", c.client_id).maybeSingle(),
@@ -85,12 +85,12 @@ export default function DetailSinistre({ basePath }: { basePath: string }) {
 
   const changeStatus = async (status: string) => {
     if (!claim) return;
-    const patch: { status: string; settled_amount?: number } = { status };
+    const patch: Record<string, unknown> = { status };
     if (status === "regle") {
       const v = prompt("Montant réglé (FCFA)", String(claim.estimated_amount ?? 0));
       if (v !== null) patch.settled_amount = Number(v);
     }
-    const { error } = await supabase.from("claims").update(patch).eq("id", claim.id);
+    const { error } = await supabase.from("claims").update(patch as never).eq("id", claim.id);
     if (error) toast.error(error.message); else { toast.success("Statut mis à jour"); load(); }
   };
 

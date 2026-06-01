@@ -7,22 +7,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Loader2, ShieldCheck } from "lucide-react";
-import type { AppRole } from "@/types/roles";
-import { ROLE_LABELS, ROLE_DESCRIPTIONS, ROLE_HOME } from "@/types/roles";
+import { Loader2, ShieldCheck, Shield } from "lucide-react";
+import { ROLE_HOME } from "@/types/roles";
 import { PasswordInput } from "@/components/auth/PasswordInput";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { MagicLinkForm } from "@/components/auth/MagicLinkForm";
-
-type Company = { id: string; name: string; code: string };
 
 export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, role, loading: authLoading } = useAuth();
+
+  const isAdminPortal =
+    typeof window !== "undefined" &&
+    (window.location.hostname.startsWith("admin.") ||
+      window.location.hostname === "admin.insureflow.cm");
 
   const [tab, setTab] = useState("login");
   const [busy, setBusy] = useState(false);
@@ -31,14 +33,10 @@ export default function Auth() {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPwd, setLoginPwd] = useState("");
 
-  // signup
+  // signup (client only)
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
-  const [signupRole, setSignupRole] = useState<AppRole>("client");
-  const [companyId, setCompanyId] = useState<string>("");
-  const [companies, setCompanies] = useState<Company[]>([]);
 
   useEffect(() => {
     if (!authLoading && user && role) {
@@ -46,19 +44,6 @@ export default function Auth() {
       navigate(target, { replace: true });
     }
   }, [user, role, authLoading, navigate, location.state]);
-
-  useEffect(() => {
-    // companies are readable to all authenticated users; for signup we fetch them anonymously is not allowed.
-    // Workaround : nous laissons le user choisir la compagnie après login pour agent/assureur. Mais pour MVP :
-    // on tente le fetch ; si vide on affichera un sélecteur libre (saisie code).
-    supabase
-      .from("companies")
-      .select("id,name,code")
-      .order("name")
-      .then(({ data }) => setCompanies((data as Company[]) ?? []));
-  }, []);
-
-  const needsCompany = signupRole === "agent" || signupRole === "assureur";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,21 +59,16 @@ export default function Auth() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (needsCompany && !companyId) {
-      toast.error("Sélectionnez votre compagnie");
-      return;
-    }
     setBusy(true);
     const redirectUrl = `${window.location.origin}/`;
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password: pwd,
       options: {
         emailRedirectTo: redirectUrl,
         data: {
           full_name: name,
-          phone,
-          role: signupRole,
+          role: "client",
         },
       },
     });
@@ -97,16 +77,6 @@ export default function Auth() {
       setBusy(false);
       toast.error(error.message);
       return;
-    }
-
-    // Si compagnie nécessaire, on l'enregistre dans le profil après création
-    if (data.user && needsCompany && companyId) {
-      // Le trigger a déjà créé profile + role 'client' OU le rôle demandé
-      // On met à jour primary_company_id
-      await supabase
-        .from("profiles")
-        .update({ primary_company_id: companyId })
-        .eq("user_id", data.user.id);
     }
 
     setBusy(false);
@@ -145,14 +115,32 @@ export default function Auth() {
         <Card className="w-full max-w-md shadow-elev-lg">
           <CardHeader>
             <CardTitle className="font-display text-2xl">Bienvenue</CardTitle>
-            <CardDescription>Connectez-vous ou créez votre compte InsureFlow.</CardDescription>
+            <CardDescription>
+              {isAdminPortal
+                ? "Portail réservé aux professionnels et administrateurs."
+                : "Connectez-vous ou créez votre compte InsureFlow."}
+            </CardDescription>
           </CardHeader>
           <CardContent>
+            {isAdminPortal && (
+              <Alert className="mb-4">
+                <Shield className="h-4 w-4" />
+                <AlertDescription>
+                  Accès réservé aux administrateurs InsureFlow, autorités de supervision et compagnies agréées.
+                </AlertDescription>
+              </Alert>
+            )}
             <Tabs value={tab} onValueChange={setTab} className="w-full">
-              <TabsList className="grid grid-cols-2 w-full">
-                <TabsTrigger value="login">Connexion</TabsTrigger>
-                <TabsTrigger value="signup">Créer un compte</TabsTrigger>
-              </TabsList>
+              {isAdminPortal ? (
+                <TabsList className="grid grid-cols-1 w-full">
+                  <TabsTrigger value="login">Connexion</TabsTrigger>
+                </TabsList>
+              ) : (
+                <TabsList className="grid grid-cols-2 w-full">
+                  <TabsTrigger value="login">Connexion</TabsTrigger>
+                  <TabsTrigger value="signup">Créer un compte</TabsTrigger>
+                </TabsList>
+              )}
 
               <TabsContent value="login" className="mt-6">
                 <form onSubmit={handleLogin} className="space-y-4">
@@ -182,63 +170,32 @@ export default function Auth() {
                 </div>
               </TabsContent>
 
+              {!isAdminPortal && (
               <TabsContent value="signup" className="mt-6">
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Nom complet</Label>
-                    <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
+                    <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Téléphone</Label>
-                      <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+237…" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="su-email">Email</Label>
-                      <Input id="su-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="su-email">Email</Label>
+                    <Input id="su-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="su-pwd">Mot de passe</Label>
                     <PasswordInput id="su-pwd" required minLength={6} value={pwd} onChange={(e) => setPwd(e.target.value)} />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Je suis</Label>
-                    <Select value={signupRole} onValueChange={(v) => setSignupRole(v as AppRole)}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {(["client", "agent", "courtier", "assureur"] as AppRole[]).map((r) => (
-                          <SelectItem key={r} value={r}>{ROLE_LABELS[r]}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">{ROLE_DESCRIPTIONS[signupRole]}</p>
-                  </div>
-
-                  {needsCompany && (
-                    <div className="space-y-2">
-                      <Label>Compagnie</Label>
-                      <Select value={companyId} onValueChange={setCompanyId}>
-                        <SelectTrigger><SelectValue placeholder="Sélectionner une compagnie" /></SelectTrigger>
-                        <SelectContent>
-                          {companies.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {companies.length === 0 && (
-                        <p className="text-xs text-muted-foreground">
-                          La liste apparaîtra après votre première connexion.
-                        </p>
-                      )}
-                    </div>
-                  )}
-
                   <Button type="submit" className="w-full" disabled={busy}>
                     {busy && <Loader2 className="h-4 w-4 animate-spin" />}
                     Créer mon compte
                   </Button>
+                  <p className="text-xs text-muted-foreground text-center pt-2">
+                    Professionnel de l'assurance ?{" "}
+                    <a href="mailto:contact@insureflow.cm" className="underline hover:text-primary">
+                      Contactez-nous
+                    </a>
+                  </p>
                 </form>
 
                 <div className="relative my-6">
@@ -248,11 +205,8 @@ export default function Auth() {
                   </span>
                 </div>
                 <SocialAuthButtons />
-                <p className="text-xs text-muted-foreground mt-3 text-center">
-                  Avec Google/Apple, le rôle <strong>client</strong> est attribué par défaut.
-                  Vous pourrez demander un autre rôle depuis votre espace.
-                </p>
               </TabsContent>
+              )}
             </Tabs>
           </CardContent>
         </Card>

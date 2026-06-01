@@ -42,15 +42,23 @@ export default function SuiviCA() {
     const yStart = `${year}-01-01`;
     const yEnd = `${year}-12-31`;
     const yPrevStart = `${year - 1}-01-01`;
-    const scope = <T extends { eq: (col: string, v: string) => T }>(q: T): T =>
-      isSingleCompany && primaryCompanyId ? q.eq("company_id", primaryCompanyId) : q;
+    const co = isSingleCompany && primaryCompanyId ? primaryCompanyId : null;
+    let payQ = supabase.from("payments").select("id,amount,status,paid_at,company_id").gte("paid_at", yPrevStart).lte("paid_at", yEnd);
+    let ctrQ = supabase.from("contracts").select("id,company_id,type,commercial_nature,total_premium,start_date").gte("start_date", yPrevStart).lte("start_date", yEnd);
+    let objQ = supabase.from("revenue_objectives").select("*").eq("year", year);
+    let recQ = supabase.from("recovery_complaints").select("*").order("created_at", { ascending: false });
+    let comQ = supabase.from("commission_reversals").select("*").order("created_at", { ascending: false });
+    if (co) {
+      payQ = payQ.eq("company_id", co);
+      ctrQ = ctrQ.eq("company_id", co);
+      objQ = objQ.eq("company_id", co);
+      recQ = recQ.eq("company_id", co);
+      comQ = comQ.eq("company_id", co);
+    }
     const [pay, ctr, obj, comp, rec, com] = await Promise.all([
-      scope(supabase.from("payments").select("id,amount,status,paid_at,company_id").gte("paid_at", yPrevStart).lte("paid_at", yEnd)),
-      scope(supabase.from("contracts").select("id,company_id,type,commercial_nature,total_premium,start_date").gte("start_date", yPrevStart).lte("start_date", yEnd)),
-      scope(supabase.from("revenue_objectives").select("*").eq("year", year)),
+      payQ, ctrQ, objQ,
       supabase.from("companies").select("id,name").order("name"),
-      scope(supabase.from("recovery_complaints").select("*").order("created_at", { ascending: false })),
-      scope(supabase.from("commission_reversals").select("*").order("created_at", { ascending: false })),
+      recQ, comQ,
     ]);
     setPayments((pay.data as Payment[]) || []);
     setContracts((ctr.data as Contract[]) || []);

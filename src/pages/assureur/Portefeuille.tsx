@@ -5,11 +5,11 @@ import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
 import { StatCard } from "@/components/StatCard";
 import { formatFCFA } from "@/lib/format";
-import { FileCheck, AlertTriangle, Users, TrendingUp } from "lucide-react";
+import { FileCheck, AlertTriangle, Users, TrendingUp, TrendingDown } from "lucide-react";
 
 export default function Portefeuille() {
   const { primaryCompanyId } = useAuth();
-  const [stats, setStats] = useState({ contrats: 0, ca: 0, sinistres: 0, clients: 0, parProduit: {} as Record<string, { n: number; ca: number }> });
+  const [stats, setStats] = useState({ contrats: 0, ca: 0, sinistres: 0, clients: 0, montantRegle: 0, sinistresOuverts: 0, parProduit: {} as Record<string, { n: number; ca: number }> });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function Portefeuille() {
     (async () => {
       const [{ data: contrats }, { data: claims }, { data: clients }] = await Promise.all([
         supabase.from("contracts").select("type,total_premium,status").eq("company_id", primaryCompanyId),
-        supabase.from("claims").select("id,status").eq("company_id", primaryCompanyId),
+        supabase.from("claims").select("id,status,settled_amount,estimated_amount").eq("company_id", primaryCompanyId),
         supabase.from("clients").select("id").eq("company_id", primaryCompanyId),
       ]);
       const parProduit: Record<string, { n: number; ca: number }> = {};
@@ -29,9 +29,12 @@ export default function Portefeuille() {
         parProduit[t].n += 1;
         parProduit[t].ca += Number(c.total_premium ?? 0);
       });
+      const claimsList = claims ?? [];
+      const montantRegle = claimsList.filter(c => c.status === "regle").reduce((s, c) => s + Number(c.settled_amount ?? 0), 0);
+      const sinistresOuverts = claimsList.filter(c => !["regle","clos","refuse"].includes(c.status as string)).length;
       setStats({
-        contrats: contrats?.length ?? 0, ca, sinistres: claims?.length ?? 0,
-        clients: clients?.length ?? 0, parProduit,
+        contrats: contrats?.length ?? 0, ca, sinistres: claimsList.length,
+        clients: clients?.length ?? 0, parProduit, montantRegle, sinistresOuverts,
       });
       setLoading(false);
     })();
@@ -39,14 +42,18 @@ export default function Portefeuille() {
 
   if (loading) return <div className="p-6 text-sm text-muted-foreground">Chargement…</div>;
 
+  const tauxSinistralite = stats.ca > 0 ? (stats.montantRegle / stats.ca * 100) : 0;
+
   return (
     <div className="space-y-6">
       <PageHeader title="Portefeuille" description="Vue 360° de votre compagnie : production, sinistralité, clients." />
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <StatCard label="Contrats" value={stats.contrats} icon={FileCheck} />
         <StatCard label="Chiffre d'affaires" value={formatFCFA(stats.ca)} icon={TrendingUp} />
         <StatCard label="Sinistres" value={stats.sinistres} icon={AlertTriangle} />
         <StatCard label="Clients" value={stats.clients} icon={Users} />
+        <StatCard label="Taux sinistralité" value={stats.ca > 0 ? tauxSinistralite.toFixed(1)+"%" : "—"} icon={TrendingDown} accent={tauxSinistralite > 70 ? "danger" : "success"} />
+        <StatCard label="Sinistres en cours" value={stats.sinistresOuverts} icon={AlertTriangle} accent="warning" />
       </div>
       <Card className="p-6">
         <h3 className="font-display font-semibold mb-4">Répartition par produit</h3>

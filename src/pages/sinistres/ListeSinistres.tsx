@@ -14,6 +14,7 @@ import { Plus, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { formatFCFA } from "@/lib/format";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
 
 const STATUS_COLORS: Record<string, string> = {
   declare: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
@@ -149,7 +150,9 @@ export default function ListeSinistres({ basePath }: { basePath: string }) {
               <TableBody>
                 {filtered.map(c => (
                   <TableRow key={c.id}>
-                    <TableCell className="font-mono text-xs">{c.claim_number}</TableCell>
+                    <TableCell className="font-mono text-xs">
+                      <Link to={`${basePath}/sinistres/${c.id}`} className="text-primary hover:underline">{c.claim_number}</Link>
+                    </TableCell>
                     <TableCell>{c.clients?.full_name}</TableCell>
                     <TableCell className="font-mono text-xs">{c.contracts?.contract_number}</TableCell>
                     <TableCell>{format(new Date(c.occurred_at), "dd/MM/yyyy")}</TableCell>

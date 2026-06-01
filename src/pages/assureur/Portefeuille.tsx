@@ -52,7 +52,7 @@ export default function Portefeuille() {
         <StatCard label="Chiffre d'affaires" value={formatFCFA(stats.ca)} icon={TrendingUp} />
         <StatCard label="Sinistres" value={stats.sinistres} icon={AlertTriangle} />
         <StatCard label="Clients" value={stats.clients} icon={Users} />
-        <StatCard label="Taux sinistralité" value={stats.ca > 0 ? tauxSinistralite.toFixed(1)+"%" : "—"} icon={TrendingDown} accent={tauxSinistralite > 70 ? "danger" : "success"} />
+        <StatCard label="Taux sinistralité" value={stats.ca > 0 ? tauxSinistralite.toFixed(1)+"%" : "—"} icon={TrendingDown} accent={tauxSinistralite > 70 ? "warning" : "success"} />
         <StatCard label="Sinistres en cours" value={stats.sinistresOuverts} icon={AlertTriangle} accent="warning" />
       </div>
       <Card className="p-6">

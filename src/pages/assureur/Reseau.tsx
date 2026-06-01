@@ -10,12 +10,15 @@ import { formatFCFA } from "@/lib/format";
 import { toast } from "sonner";
 import { Ban } from "lucide-react";
 
-interface Member { user_id: string; full_name: string; phone: string | null; ca: number; contrats: number; since: string; }
+interface Member { user_id: string; full_name: string; phone: string | null; ca: number; contrats: number; since: string; role?: string; }
 
 export default function Reseau() {
   const { primaryCompanyId } = useAuth();
   const [agents, setAgents] = useState<Member[]>([]);
   const [courtiers, setCourtiers] = useState<(Member & { access_id: string })[]>([]);
+  const [garages, setGarages] = useState<Member[]>([]);
+  const [experts, setExperts] = useState<Member[]>([]);
+  const [sante, setSante] = useState<Member[]>([]);
 
   const load = async () => {
     if (!primaryCompanyId) return;
@@ -33,6 +36,16 @@ export default function Reseau() {
       user_id: p.user_id, full_name: p.full_name ?? "—", phone: p.phone,
       ca: caBy[p.user_id] ?? 0, contrats: cBy[p.user_id] ?? 0, since: p.created_at,
     })));
+
+    const mkMember = (p: typeof prof[number], role?: string): Member => ({
+      user_id: p.user_id, full_name: p.full_name ?? "—", phone: p.phone,
+      ca: caBy[p.user_id] ?? 0, contrats: cBy[p.user_id] ?? 0, since: p.created_at, role,
+    });
+    const roleOf = (uid: string) => ur?.find(r => r.user_id === uid)?.role;
+    setGarages((prof ?? []).filter(p => roleOf(p.user_id) === "garage").map(p => mkMember(p, "garage")));
+    setExperts((prof ?? []).filter(p => roleOf(p.user_id) === "expert").map(p => mkMember(p, "expert")));
+    setSante((prof ?? []).filter(p => roleOf(p.user_id) === "hopital" || roleOf(p.user_id) === "pharmacie")
+      .map(p => mkMember(p, roleOf(p.user_id))));
 
     const { data: bca } = await supabase.from("broker_company_access").select("id,broker_user_id,created_at").eq("company_id", primaryCompanyId).eq("is_active", true);
     const brokerIds = (bca ?? []).map((b) => b.broker_user_id);
@@ -58,7 +71,11 @@ export default function Reseau() {
   const renderRow = (m: Member, action?: React.ReactNode) => (
     <div key={m.user_id} className="grid grid-cols-1 md:grid-cols-5 gap-2 items-center p-4 border-b last:border-b-0">
       <div className="md:col-span-2">
-        <div className="font-medium">{m.full_name}</div>
+        <div className="font-medium flex items-center gap-2">
+          {m.full_name}
+          {m.role === "hopital" && <Badge variant="secondary" className="text-[10px]">Hôpital</Badge>}
+          {m.role === "pharmacie" && <Badge variant="secondary" className="text-[10px]">Pharmacie</Badge>}
+        </div>
         <div className="text-xs text-muted-foreground">{m.phone}</div>
       </div>
       <div className="text-sm font-mono">{formatFCFA(m.ca)}</div>
@@ -77,6 +94,9 @@ export default function Reseau() {
         <TabsList>
           <TabsTrigger value="agents">Agents directs ({agents.length})</TabsTrigger>
           <TabsTrigger value="courtiers">Courtiers partenaires ({courtiers.length})</TabsTrigger>
+          <TabsTrigger value="garages">Garages ({garages.length})</TabsTrigger>
+          <TabsTrigger value="experts">Experts ({experts.length})</TabsTrigger>
+          <TabsTrigger value="sante">Santé ({sante.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="agents">
           <Card>{agents.length === 0 ? <div className="p-6 text-sm text-muted-foreground">Aucun agent rattaché.</div> : agents.map((m) => renderRow(m))}</Card>
@@ -87,6 +107,15 @@ export default function Reseau() {
               <Ban className="h-3 w-3 mr-1" /> Révoquer
             </Button>
           )))}</Card>
+        </TabsContent>
+        <TabsContent value="garages">
+          <Card>{garages.length === 0 ? <div className="p-6 text-sm text-muted-foreground">Aucun garage partenaire.</div> : garages.map(m => renderRow(m))}</Card>
+        </TabsContent>
+        <TabsContent value="experts">
+          <Card>{experts.length === 0 ? <div className="p-6 text-sm text-muted-foreground">Aucun expert partenaire.</div> : experts.map(m => renderRow(m))}</Card>
+        </TabsContent>
+        <TabsContent value="sante">
+          <Card>{sante.length === 0 ? <div className="p-6 text-sm text-muted-foreground">Aucun partenaire santé.</div> : sante.map(m => renderRow(m))}</Card>
         </TabsContent>
       </Tabs>
     </div>

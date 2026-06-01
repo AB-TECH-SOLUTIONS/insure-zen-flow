@@ -33,6 +33,7 @@ import DetailClient from "./pages/clients/DetailClient";
 import ListeVehicules from "./pages/vehicules/ListeVehicules";
 import Messagerie from "./pages/messages/Messagerie";
 import ListeSinistres from "./pages/sinistres/ListeSinistres";
+import DetailSinistre from "./pages/sinistres/DetailSinistre";
 import StockAttestations from "./pages/attestations/StockAttestations";
 import ImportExport from "./pages/import-export/ImportExport";
 import ListeTaches from "./pages/taches/ListeTaches";
@@ -95,6 +96,7 @@ const RoleRoutes = ({ base }: { base: string }) => (
     <Route path={`${base}/vehicules`} element={<ListeVehicules basePath={base} />} />
     <Route path={`${base}/messages`} element={<Messagerie />} />
     <Route path={`${base}/sinistres`} element={<ListeSinistres basePath={base} />} />
+    <Route path={`${base}/sinistres/:id`} element={<DetailSinistre basePath={base} />} />
     <Route path={`${base}/import-export`} element={<ImportExport />} />
     <Route path={`${base}/taches`} element={<ListeTaches />} />
     <Route path={`${base}/suivi-ca`} element={<SuiviCA />} />

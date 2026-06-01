@@ -23,7 +23,8 @@ type Commission = { id: string; company_id: string; beneficiary_name: string | n
 const MONTHS = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"];
 
 export default function SuiviCA() {
-  const { user, primaryCompanyId } = useAuth();
+  const { user, role, primaryCompanyId } = useAuth();
+  const isSingleCompany = role === "assureur" || role === "agent";
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [companyFilter, setCompanyFilter] = useState<string>("all");
@@ -41,13 +42,15 @@ export default function SuiviCA() {
     const yStart = `${year}-01-01`;
     const yEnd = `${year}-12-31`;
     const yPrevStart = `${year - 1}-01-01`;
+    const scope = <T extends { eq: (col: string, v: string) => T }>(q: T): T =>
+      isSingleCompany && primaryCompanyId ? q.eq("company_id", primaryCompanyId) : q;
     const [pay, ctr, obj, comp, rec, com] = await Promise.all([
-      supabase.from("payments").select("id,amount,status,paid_at,company_id").gte("paid_at", yPrevStart).lte("paid_at", yEnd),
-      supabase.from("contracts").select("id,company_id,type,commercial_nature,total_premium,start_date").gte("start_date", yPrevStart).lte("start_date", yEnd),
-      supabase.from("revenue_objectives").select("*").eq("year", year),
+      scope(supabase.from("payments").select("id,amount,status,paid_at,company_id").gte("paid_at", yPrevStart).lte("paid_at", yEnd)),
+      scope(supabase.from("contracts").select("id,company_id,type,commercial_nature,total_premium,start_date").gte("start_date", yPrevStart).lte("start_date", yEnd)),
+      scope(supabase.from("revenue_objectives").select("*").eq("year", year)),
       supabase.from("companies").select("id,name").order("name"),
-      supabase.from("recovery_complaints").select("*").order("created_at", { ascending: false }),
-      supabase.from("commission_reversals").select("*").order("created_at", { ascending: false }),
+      scope(supabase.from("recovery_complaints").select("*").order("created_at", { ascending: false })),
+      scope(supabase.from("commission_reversals").select("*").order("created_at", { ascending: false })),
     ]);
     setPayments((pay.data as Payment[]) || []);
     setContracts((ctr.data as Contract[]) || []);
@@ -59,6 +62,9 @@ export default function SuiviCA() {
   };
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [year]);
+  useEffect(() => {
+    if (isSingleCompany && primaryCompanyId) setCompanyFilter(primaryCompanyId);
+  }, [isSingleCompany, primaryCompanyId]);
 
   const filterCo = <T extends { company_id: string }>(rows: T[]) =>
     companyFilter === "all" ? rows : rows.filter(r => r.company_id === companyFilter);
@@ -167,13 +173,19 @@ export default function SuiviCA() {
                 {[year + 1, year, year - 1, year - 2].map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Select value={companyFilter} onValueChange={setCompanyFilter}>
-              <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes compagnies</SelectItem>
-                {companies.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            {!isSingleCompany ? (
+              <Select value={companyFilter} onValueChange={setCompanyFilter}>
+                <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes compagnies</SelectItem>
+                  {companies.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Badge variant="outline" className="h-9 px-3">
+                {companies.find(c => c.id === primaryCompanyId)?.name ?? "Ma compagnie"}
+              </Badge>
+            )}
             <Button variant="outline" size="sm" onClick={load}><RefreshCw className="h-4 w-4 mr-1" />Recharger</Button>
           </>
         }

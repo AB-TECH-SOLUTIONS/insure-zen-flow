@@ -100,6 +100,65 @@ export type Database = {
         }
         Relationships: []
       }
+      avenants: {
+        Row: {
+          ancienne_valeur: Json
+          avenant_number: string
+          contract_id: string
+          created_at: string
+          created_by: string | null
+          delta_prime: number | null
+          description: string | null
+          effective_date: string
+          id: string
+          nouvelle_valeur: Json
+          pdf_url: string | null
+          prime_apres: number | null
+          prime_avant: number | null
+          type: string
+        }
+        Insert: {
+          ancienne_valeur?: Json
+          avenant_number: string
+          contract_id: string
+          created_at?: string
+          created_by?: string | null
+          delta_prime?: number | null
+          description?: string | null
+          effective_date: string
+          id?: string
+          nouvelle_valeur?: Json
+          pdf_url?: string | null
+          prime_apres?: number | null
+          prime_avant?: number | null
+          type: string
+        }
+        Update: {
+          ancienne_valeur?: Json
+          avenant_number?: string
+          contract_id?: string
+          created_at?: string
+          created_by?: string | null
+          delta_prime?: number | null
+          description?: string | null
+          effective_date?: string
+          id?: string
+          nouvelle_valeur?: Json
+          pdf_url?: string | null
+          prime_apres?: number | null
+          prime_avant?: number | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avenants_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bordereaux: {
         Row: {
           company_id: string
@@ -235,14 +294,57 @@ export type Database = {
           },
         ]
       }
+      claim_events: {
+        Row: {
+          claim_id: string
+          comment: string | null
+          created_at: string
+          created_by: string | null
+          event_type: string
+          id: string
+          new_status: string | null
+          old_status: string | null
+        }
+        Insert: {
+          claim_id: string
+          comment?: string | null
+          created_at?: string
+          created_by?: string | null
+          event_type: string
+          id?: string
+          new_status?: string | null
+          old_status?: string | null
+        }
+        Update: {
+          claim_id?: string
+          comment?: string | null
+          created_at?: string
+          created_by?: string | null
+          event_type?: string
+          id?: string
+          new_status?: string | null
+          old_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_events_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       claims: {
         Row: {
           assigned_expert_id: string | null
           assigned_garage_id: string | null
+          assigned_handler: string | null
           attachments: Json
           circonstances: string | null
           claim_number: string
           client_id: string
+          closed_at: string | null
           company_id: string
           contract_id: string
           created_at: string
@@ -251,6 +353,7 @@ export type Database = {
           estimated_amount: number | null
           expert_notes: string | null
           garage_notes: string | null
+          handler_notes: string | null
           id: string
           lieu_sinistre: string | null
           occurred_at: string
@@ -261,10 +364,12 @@ export type Database = {
         Insert: {
           assigned_expert_id?: string | null
           assigned_garage_id?: string | null
+          assigned_handler?: string | null
           attachments?: Json
           circonstances?: string | null
           claim_number?: string
           client_id: string
+          closed_at?: string | null
           company_id: string
           contract_id: string
           created_at?: string
@@ -273,6 +378,7 @@ export type Database = {
           estimated_amount?: number | null
           expert_notes?: string | null
           garage_notes?: string | null
+          handler_notes?: string | null
           id?: string
           lieu_sinistre?: string | null
           occurred_at: string
@@ -283,10 +389,12 @@ export type Database = {
         Update: {
           assigned_expert_id?: string | null
           assigned_garage_id?: string | null
+          assigned_handler?: string | null
           attachments?: Json
           circonstances?: string | null
           claim_number?: string
           client_id?: string
+          closed_at?: string | null
           company_id?: string
           contract_id?: string
           created_at?: string
@@ -295,6 +403,7 @@ export type Database = {
           estimated_amount?: number | null
           expert_notes?: string | null
           garage_notes?: string | null
+          handler_notes?: string | null
           id?: string
           lieu_sinistre?: string | null
           occurred_at?: string
@@ -523,6 +632,123 @@ export type Database = {
         }
         Relationships: []
       }
+      constats_amiables: {
+        Row: {
+          assure_a_id: string | null
+          assure_b_id: string | null
+          blesses: boolean
+          circonstances: string | null
+          claim_id: string | null
+          contract_id_a: string | null
+          contract_id_b: string | null
+          created_at: string
+          created_by: string | null
+          date_accident: string
+          degats_vehicule_a: string | null
+          degats_vehicule_b: string | null
+          description_blesses: string | null
+          heure_accident: string | null
+          id: string
+          lieu: string
+          pdf_url: string | null
+          responsabilite_a: number
+          responsabilite_b: number
+          schema_accident: string | null
+          signe_a_at: string | null
+          signe_b_at: string | null
+          statut: string
+          temoins: Json
+        }
+        Insert: {
+          assure_a_id?: string | null
+          assure_b_id?: string | null
+          blesses?: boolean
+          circonstances?: string | null
+          claim_id?: string | null
+          contract_id_a?: string | null
+          contract_id_b?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_accident: string
+          degats_vehicule_a?: string | null
+          degats_vehicule_b?: string | null
+          description_blesses?: string | null
+          heure_accident?: string | null
+          id?: string
+          lieu: string
+          pdf_url?: string | null
+          responsabilite_a?: number
+          responsabilite_b?: number
+          schema_accident?: string | null
+          signe_a_at?: string | null
+          signe_b_at?: string | null
+          statut?: string
+          temoins?: Json
+        }
+        Update: {
+          assure_a_id?: string | null
+          assure_b_id?: string | null
+          blesses?: boolean
+          circonstances?: string | null
+          claim_id?: string | null
+          contract_id_a?: string | null
+          contract_id_b?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_accident?: string
+          degats_vehicule_a?: string | null
+          degats_vehicule_b?: string | null
+          description_blesses?: string | null
+          heure_accident?: string | null
+          id?: string
+          lieu?: string
+          pdf_url?: string | null
+          responsabilite_a?: number
+          responsabilite_b?: number
+          schema_accident?: string | null
+          signe_a_at?: string | null
+          signe_b_at?: string | null
+          statut?: string
+          temoins?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "constats_amiables_assure_a_id_fkey"
+            columns: ["assure_a_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "constats_amiables_assure_b_id_fkey"
+            columns: ["assure_b_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "constats_amiables_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "constats_amiables_contract_id_a_fkey"
+            columns: ["contract_id_a"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "constats_amiables_contract_id_b_fkey"
+            columns: ["contract_id_b"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contract_sequences: {
         Row: {
           company_id: string
@@ -576,6 +802,7 @@ export type Database = {
           created_by: string | null
           end_date: string
           id: string
+          parent_contract_id: string | null
           pdf_url: string | null
           prime_brute: number | null
           prime_nette: number | null
@@ -604,6 +831,7 @@ export type Database = {
           created_by?: string | null
           end_date: string
           id?: string
+          parent_contract_id?: string | null
           pdf_url?: string | null
           prime_brute?: number | null
           prime_nette?: number | null
@@ -632,6 +860,7 @@ export type Database = {
           created_by?: string | null
           end_date?: string
           id?: string
+          parent_contract_id?: string | null
           pdf_url?: string | null
           prime_brute?: number | null
           prime_nette?: number | null
@@ -659,6 +888,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_parent_contract_id_fkey"
+            columns: ["parent_contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
           {

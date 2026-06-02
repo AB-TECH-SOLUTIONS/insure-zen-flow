@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Ban, CheckCircle2, Pause } from "lucide-react";
 import { FileText, IdCard, Receipt } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatFCFA } from "@/lib/format";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
@@ -45,6 +46,7 @@ export default function DetailContrat({ basePath }: { basePath: string }) {
   const [clientName, setClientName] = useState("");
   const [clientFull, setClientFull] = useState<{ full_name: string; phone?: string | null; address?: string | null; profession?: string | null; id?: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [avenants, setAvenants] = useState<Array<{ id: string; avenant_number: string; type: string; description: string | null; effective_date: string; prime_avant: number | null; prime_apres: number | null; delta_prime: number | null }>>([]);
 
   const load = async () => {
     if (!id) return;
@@ -62,6 +64,12 @@ export default function DetailContrat({ basePath }: { basePath: string }) {
     setCompanyColor((comp as { primary_color?: string } | null)?.primary_color ?? "#0EA5E9");
     setClientName(cli?.full_name ?? "—");
     setClientFull(cli as typeof clientFull);
+    const { data: av } = await supabase
+      .from("avenants")
+      .select("id,avenant_number,type,description,effective_date,prime_avant,prime_apres,delta_prime")
+      .eq("contract_id", id)
+      .order("effective_date", { ascending: false });
+    setAvenants((av as typeof avenants) || []);
     setLoading(false);
   };
 
@@ -171,7 +179,14 @@ export default function DetailContrat({ basePath }: { basePath: string }) {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 p-6 space-y-4">
+        <div className="lg:col-span-2">
+        <Tabs defaultValue="info">
+          <TabsList>
+            <TabsTrigger value="info">Informations</TabsTrigger>
+            <TabsTrigger value="avenants">Avenants {avenants.length > 0 && `(${avenants.length})`}</TabsTrigger>
+          </TabsList>
+          <TabsContent value="info">
+        <Card className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-display text-lg font-semibold">Informations</h3>
             <Badge
@@ -223,6 +238,39 @@ export default function DetailContrat({ basePath }: { basePath: string }) {
             </Button>
           )}
         </Card>
+          </TabsContent>
+          <TabsContent value="avenants">
+            <Card className="p-6">
+              {avenants.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Aucun avenant pour ce contrat.</p>
+              ) : (
+                <ul className="divide-y">
+                  {avenants.map(a => (
+                    <li key={a.id} className="py-3 flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{a.avenant_number}</span>
+                          <Badge variant="outline" className="capitalize">{a.type}</Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">Effet : {new Date(a.effective_date).toLocaleDateString("fr-FR")}</p>
+                        {a.description && <p className="text-sm mt-1">{a.description}</p>}
+                      </div>
+                      {a.delta_prime !== null && (
+                        <div className="text-right text-sm">
+                          <p className="text-xs text-muted-foreground">Δ Prime</p>
+                          <p className={`font-mono font-semibold ${Number(a.delta_prime) >= 0 ? "text-primary" : "text-destructive"}`}>
+                            {Number(a.delta_prime) >= 0 ? "+" : ""}{formatFCFA(Number(a.delta_prime))}
+                          </p>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+          </TabsContent>
+        </Tabs>
+        </div>
 
         <Card className="p-4 space-y-2">
           <h4 className="text-sm font-medium mb-2">Actions</h4>

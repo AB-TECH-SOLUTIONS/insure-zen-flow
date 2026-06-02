@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { formatFCFA } from "@/lib/format";
 import { AlertTriangle, FileCheck, FileText, Plus, Download, MessageSquare, Upload, FilePlus2, Wallet } from "lucide-react";
+import { ClaimStepper } from "@/components/sinistres/ClaimStepper";
 
 type Contract = { id: string; contract_number: string; type: string; status: string; start_date: string; end_date: string; total_premium: number; pdf_url: string | null; client_id: string; company_id: string };
 type Claim = { id: string; claim_number: string; status: string; occurred_at: string; description: string | null; estimated_amount: number | null };
@@ -53,6 +54,17 @@ export default function EspaceClient() {
   };
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [user?.id]);
+
+  // Realtime : MAJ des sinistres quand le statut change côté gestionnaire
+  useEffect(() => {
+    if (!client) return;
+    const channel = supabase
+      .channel(`claims-${client.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "claims", filter: `client_id=eq.${client.id}` }, () => load())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+    // eslint-disable-next-line
+  }, [client?.id]);
 
   const stats = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -168,6 +180,19 @@ export default function EspaceClient() {
         </TabsContent>
 
         <TabsContent value="claims" className="mt-4">
+          {claims.filter(c => c.status !== "regle" && c.status !== "clos" && c.status !== "refuse").length > 0 && (
+            <div className="grid sm:grid-cols-2 gap-3 mb-4">
+              {claims.filter(c => c.status !== "regle" && c.status !== "clos" && c.status !== "refuse").map(c => (
+                <Card key={`step-${c.id}`} className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-sm">{c.claim_number}</p>
+                    <span className="text-xs text-muted-foreground">{new Date(c.occurred_at).toLocaleDateString("fr-FR")}</span>
+                  </div>
+                  <ClaimStepper status={c.status} />
+                </Card>
+              ))}
+            </div>
+          )}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-base">Historique des sinistres</CardTitle>

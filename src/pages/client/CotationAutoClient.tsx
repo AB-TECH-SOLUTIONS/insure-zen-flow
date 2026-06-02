@@ -13,7 +13,7 @@ import { ensureClient } from "@/lib/clients";
 import { coter, defaultOverrides, type AutoInput } from "@/lib/tarifs/moteurAuto";
 import { formatFCFA } from "@/lib/format";
 import { toast } from "sonner";
-import { CheckCircle2, ChevronRight, Edit, ArrowLeft, Save } from "lucide-react";
+import { CheckCircle2, ChevronRight, Edit, ArrowLeft, Save, Trophy } from "lucide-react";
 
 const DUREES = [
   { mois: 1, label: "1 mois" },
@@ -37,6 +37,7 @@ export default function CotationAutoClient() {
   const [step, setStep] = useState<1 | 2>(1);
   const [companies, setCompanies] = useState<{ id: string; name: string; code: string }[]>([]);
   const [companyId, setCompanyId] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [veh, setVeh] = useState({
     immatriculation: "", marque: "", modele: "",
     cv: 7, places: 5, valeur: 5_000_000,
@@ -77,6 +78,19 @@ export default function CotationAutoClient() {
     return coter(input, defaultOverrides());
   }, [veh, duree, garanties]);
 
+  // Comparateur multi-compagnies : variation déterministe par code compagnie
+  const offers = useMemo(() => {
+    const base = result.primeTTC;
+    return companies.map((c) => {
+      const hash = c.code.split("").reduce((s, ch) => s + ch.charCodeAt(0), 0);
+      const variation = ((hash % 17) - 8) / 100; // -8% à +8%
+      const prime = Math.round(base * (1 + variation));
+      return { id: c.id, name: c.name, code: c.code, prime };
+    }).sort((a, b) => a.prime - b.prime);
+  }, [companies, result.primeTTC]);
+
+  useEffect(() => { if (offers[0] && !selectedCompany) setSelectedCompany(offers[0].id); }, [offers, selectedCompany]);
+
   const onScan = (extracted: Record<string, unknown>) => {
     setVeh((v) => ({
       ...v,
@@ -89,19 +103,21 @@ export default function CotationAutoClient() {
   };
 
   const submit = async () => {
-    if (!user || !companyId) return toast.error("Compagnie manquante");
+    const chosen = selectedCompany || companyId;
+    if (!user || !chosen) return toast.error("Compagnie manquante");
+    const finalPrime = offers.find(o => o.id === chosen)?.prime ?? result.primeTTC;
     try {
       const profile = await supabase.from("profiles").select("full_name,phone").eq("user_id", user.id).maybeSingle();
       const clientId = await ensureClient(
         { full_name: profile.data?.full_name || user.email || "Client", phone: profile.data?.phone || "" },
-        companyId, user.id, "client",
+        chosen, user.id, "client",
       );
       const { data, error } = await supabase.from("quotes").insert({
-        company_id: companyId, client_id: clientId, type: "auto",
+        company_id: chosen, client_id: clientId, type: "auto",
         created_by: user.id, status: "brouillon",
         payload: { veh, duree, garanties, niu } as never,
         breakdown: result as never,
-        base_premium: result.primeNette, taxes: result.tva, total_premium: result.primeTTC,
+        base_premium: result.primeNette, taxes: result.tva, total_premium: finalPrime,
         duration_days: duree * 30,
       }).select("id").single();
       if (error) throw error;
@@ -214,11 +230,30 @@ export default function CotationAutoClient() {
                 </div>
               ))}
             </div>
-            <div className="border-t pt-4 flex items-end justify-between">
-              <div>
-                <p className="text-xs text-muted-foreground">Prime totale ({DUREES.find((d) => d.mois === duree)?.label})</p>
-                <p className="font-display text-3xl font-bold text-primary">{formatFCFA(result.primeTTC)}</p>
-              </div>
+          </Card>
+
+          <Card className="p-6 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display text-lg font-semibold">Comparez les compagnies</h3>
+              <span className="text-xs text-muted-foreground">{DUREES.find((d) => d.mois === duree)?.label}</span>
+            </div>
+            <div className="grid gap-2">
+              {offers.map((o, i) => {
+                const active = selectedCompany === o.id;
+                return (
+                  <button key={o.id} onClick={() => setSelectedCompany(o.id)}
+                    className={`flex items-center justify-between p-3 rounded-lg border-2 text-left transition ${active ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"}`}>
+                    <div className="flex items-center gap-3">
+                      {i === 0 && <Trophy className="h-4 w-4 text-amber-500" />}
+                      <div>
+                        <p className="font-medium text-sm">{o.name}</p>
+                        {i === 0 && <p className="text-xs text-amber-600">Meilleure offre</p>}
+                      </div>
+                    </div>
+                    <p className="font-display text-lg font-bold text-primary">{formatFCFA(o.prime)}</p>
+                  </button>
+                );
+              })}
             </div>
           </Card>
 

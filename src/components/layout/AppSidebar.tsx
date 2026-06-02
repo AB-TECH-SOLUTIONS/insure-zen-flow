@@ -8,7 +8,7 @@ import {
   MessagesSquare, Settings, Building2, ShieldCheck, ScrollText, BarChart3, Stamp,
   UserCog, Plus, Database, ListTodo, LineChart, Briefcase,
   Users2, ScrollText as ScrollIcon, RefreshCw, FileSpreadsheet,
-  Upload, FolderOpen,
+  Upload, FolderOpen, QrCode, FileWarning, Coins,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import type { AppRole } from "@/types/roles";
@@ -24,7 +24,9 @@ const NAV: Partial<Record<AppRole, { label: string; items: Item[] }[]>> = {
       { title: "Mon espace", url: "/client/espace", icon: Briefcase },
       { title: "Mes cotations", url: "/client/cotations", icon: FileText },
       { title: "Mes contrats", url: "/client/contrats", icon: FileCheck },
+      { title: "Ma carte d'assuré", url: "/client/carte", icon: QrCode },
       { title: "Sinistres", url: "/client/sinistres", icon: AlertTriangle },
+      { title: "Constat amiable", url: "/client/constats/nouveau", icon: FileWarning },
       { title: "Paiements", url: "/client/paiements", icon: CreditCard },
       { title: "Messagerie", url: "/client/messages", icon: MessagesSquare },
     ]},
@@ -46,6 +48,7 @@ const NAV: Partial<Record<AppRole, { label: string; items: Item[] }[]>> = {
     { label: "Encaissements & sinistres", items: [
       { title: "Paiements", url: "/agent/paiements", icon: CreditCard },
       { title: "Sinistres", url: "/agent/sinistres", icon: AlertTriangle },
+      { title: "Constat amiable", url: "/agent/constats/nouveau", icon: FileWarning },
       { title: "Stock attestations", url: "/agent/attestations", icon: Stamp },
     ]},
     { label: "Échanges & outils", items: [
@@ -60,6 +63,7 @@ const NAV: Partial<Record<AppRole, { label: string; items: Item[] }[]>> = {
       { title: "Tâches équipe", url: "/courtier/taches", icon: ListTodo },
       { title: "Mon équipe", url: "/courtier/equipe", icon: Users2 },
       { title: "Mes accès compagnies", url: "/courtier/compagnies", icon: Building2 },
+      { title: "Mes commissions", url: "/courtier/commissions", icon: Coins },
     ]},
     { label: "Production", items: [
       { title: "Cotations", url: "/courtier/cotations", icon: FileText },

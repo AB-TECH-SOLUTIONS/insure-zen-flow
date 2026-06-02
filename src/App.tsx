@@ -71,6 +71,9 @@ import Historique from "./pages/pharmacie/Historique";
 import DepotDocument from "./pages/autorite/DepotDocument";
 import MesDocuments from "./pages/autorite/MesDocuments";
 import VerificationAttestation from "./pages/autorite/VerificationAttestation";
+import MesCommissions from "./pages/courtier/MesCommissions";
+import CarteAssure from "./pages/client/CarteAssure";
+import ConstatAmiable from "./pages/sinistres/ConstatAmiable";
 
 const queryClient = new QueryClient();
 
@@ -120,6 +123,8 @@ const App = () => (
             <Route element={<ProtectedRoute allow={["client", "super_admin"]}><AppLayout /></ProtectedRoute>}>
               <Route path="/client" element={<ClientDashboard />} />
               <Route path="/client/espace" element={<EspaceClient />} />
+              <Route path="/client/carte" element={<CarteAssure />} />
+              <Route path="/client/constats/nouveau" element={<ConstatAmiable />} />
               <Route path="/client/cotations/nouvelle/auto" element={<CotationAutoClient />} />
               <Route path="/client/cotations/nouvelle/voyage" element={<CotationVoyageClient />} />
               <Route path="/client/cotations/nouvelle/vie" element={<CotationVieClient />} />
@@ -134,6 +139,7 @@ const App = () => (
               <Route path="/agent/attestations" element={<StockAttestations />} />
               <Route path="/agent/renouvellements" element={<Renouvellements basePath="/agent" />} />
               <Route path="/agent/bordereaux" element={<Bordereaux />} />
+              <Route path="/agent/constats/nouveau" element={<ConstatAmiable />} />
             </Route>
 
             {/* COURTIER */}
@@ -141,6 +147,7 @@ const App = () => (
               <Route path="/courtier" element={<CourtierDashboard />} />
               {RoleRoutes({ base: "/courtier" })}
               <Route path="/courtier/compagnies" element={<MesAccesCompagnies />} />
+              <Route path="/courtier/commissions" element={<MesCommissions />} />
               <Route path="/courtier/renouvellements" element={<Renouvellements basePath="/courtier" />} />
               <Route path="/courtier/bordereaux" element={<Bordereaux />} />
             </Route>

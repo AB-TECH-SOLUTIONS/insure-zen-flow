@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { LogOut } from "lucide-react";
 import { NotificationBell } from "./NotificationBell";
 import ChatbotWidget from "@/components/chatbot/ChatbotWidget";
+import { GlobalSearch } from "@/components/GlobalSearch";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuSeparator, DropdownMenuTrigger,
@@ -37,6 +38,7 @@ export default function AppLayout() {
               </span>
             </div>
             <div className="flex items-center gap-2">
+              <GlobalSearch />
               <NotificationBell />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

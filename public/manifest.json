@@ -1,0 +1,24 @@
+{
+  "name": "InsureZen Flow",
+  "short_name": "InsureZen",
+  "description": "Plateforme d'assurance multi-compagnies pour le marché CEMAC.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B1220",
+  "theme_color": "#1E3A5F",
+  "lang": "fr-CM",
+  "icons": [
+    {
+      "src": "/placeholder.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/placeholder.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

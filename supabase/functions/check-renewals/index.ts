@@ -1,19 +1,16 @@
-// Cron quotidien : alertes de renouvellement contrats expirant dans <= 30 jours
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
-function json(b: unknown, s = 200) {
-  return new Response(JSON.stringify(b), {
-    status: s,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+// Cron quotidien : alertes de renouvellement contrats expirant dans <= 30 jours.
+// Sécurité : CORS restreint, accès limité au scheduler interne Supabase
+// (Authorization Bearer = SUPABASE_SERVICE_ROLE_KEY).
+import { corsHeadersFor, jsonResponse, isInternalCron } from "../_shared/security.ts";
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeadersFor(req) });
+  }
+
+  if (!isInternalCron(req)) {
+    return jsonResponse(req, { error: "Forbidden" }, 403);
+  }
 
   try {
     const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
@@ -61,9 +58,9 @@ Deno.serve(async (req) => {
       });
       sent++;
     }
-    return json({ success: true, sent });
+    return jsonResponse(req, { success: true, sent });
   } catch (e) {
     console.error("check-renewals error", e);
-    return json({ error: e instanceof Error ? e.message : "Erreur" }, 500);
+    return jsonResponse(req, { error: "Erreur interne" }, 500);
   }
 });

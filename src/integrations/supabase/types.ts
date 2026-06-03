@@ -1641,6 +1641,33 @@ export type Database = {
           },
         ]
       }
+      rate_limits: {
+        Row: {
+          bucket: string
+          count: number
+          created_at: string
+          id: string
+          identifier: string
+          window_start: string
+        }
+        Insert: {
+          bucket: string
+          count?: number
+          created_at?: string
+          id?: string
+          identifier: string
+          window_start?: string
+        }
+        Update: {
+          bucket?: string
+          count?: number
+          created_at?: string
+          id?: string
+          identifier?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       recovery_complaints: {
         Row: {
           amount_due: number
@@ -1965,6 +1992,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_and_increment_rate_limit: {
+        Args: { _bucket: string; _identifier: string; _max_per_minute: number }
+        Returns: boolean
+      }
       get_primary_company: { Args: { _user_id: string }; Returns: string }
       get_user_companies: { Args: { _user_id: string }; Returns: string[] }
       has_role: {

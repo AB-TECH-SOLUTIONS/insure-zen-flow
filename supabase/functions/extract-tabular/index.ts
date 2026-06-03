@@ -1,21 +1,57 @@
-// Extraction tabulaire à partir d'un PDF/image vers un schéma d'entité (clients, contrats, ...)
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+// Extraction tabulaire depuis un PDF/image vers un schéma d'entité.
+// Sécurité : CORS restreint, JWT requis, rate limit 10/min, validation taille.
+import {
+  corsHeadersFor,
+  jsonResponse,
+  requireUser,
+  checkRateLimit,
+} from "../_shared/security.ts";
+
+const ALLOWED_ENTITIES = new Set(["clients", "contrats", "vehicules", "paiements", "sinistres"]);
+const ALLOWED_MIME = new Set([
+  "application/pdf", "image/jpeg", "image/png", "image/webp",
+]);
+const MAX_BASE64_LENGTH = Math.ceil((8 * 1024 * 1024) * 4 / 3); // ~8MB binaire
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeadersFor(req) });
+  }
+
+  const auth = await requireUser(req);
+  if (!auth.ok) return auth.response;
+
+  const allowed = await checkRateLimit("extract-tabular", auth.userId, 10);
+  if (!allowed) {
+    return jsonResponse(req, { error: "Trop de requêtes, patientez 1 minute." }, 429);
+  }
 
   try {
     const { entityKind, fileBase64, mimeType, columns } = await req.json();
-    if (!entityKind || !fileBase64 || !columns?.length) {
-      return json({ error: "Paramètres manquants" }, 400);
+
+    if (!entityKind || typeof entityKind !== "string" || !ALLOWED_ENTITIES.has(entityKind)) {
+      return jsonResponse(req, { error: "entityKind invalide" }, 400);
+    }
+    if (!fileBase64 || typeof fileBase64 !== "string") {
+      return jsonResponse(req, { error: "fileBase64 requis" }, 400);
+    }
+    if (fileBase64.length > MAX_BASE64_LENGTH) {
+      return jsonResponse(req, { error: "Fichier trop volumineux (>8MB)" }, 413);
+    }
+    if (mimeType && !ALLOWED_MIME.has(mimeType)) {
+      return jsonResponse(req, { error: "mimeType non supporté" }, 400);
+    }
+    if (!Array.isArray(columns) || columns.length === 0 || columns.length > 30) {
+      return jsonResponse(req, { error: "columns doit être un tableau de 1 à 30 éléments" }, 400);
+    }
+    for (const c of columns) {
+      if (!c?.key || !c?.label || typeof c.key !== "string" || typeof c.label !== "string") {
+        return jsonResponse(req, { error: "format de colonne invalide" }, 400);
+      }
     }
 
     const apiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!apiKey) return json({ error: "LOVABLE_API_KEY manquant" }, 500);
+    if (!apiKey) return jsonResponse(req, { error: "LOVABLE_API_KEY manquant" }, 500);
 
     const properties: Record<string, unknown> = {};
     for (const c of columns) properties[c.key] = { type: "string", description: c.label };
@@ -62,31 +98,23 @@ Deno.serve(async (req) => {
       }),
     });
 
-    if (aiResp.status === 429) return json({ error: "Limite atteinte, réessayez plus tard." }, 429);
-    if (aiResp.status === 402) return json({ error: "Crédits IA épuisés." }, 402);
+    if (aiResp.status === 429) return jsonResponse(req, { error: "Limite IA atteinte." }, 429);
+    if (aiResp.status === 402) return jsonResponse(req, { error: "Crédits IA épuisés." }, 402);
     if (!aiResp.ok) {
-      const t = await aiResp.text();
-      console.error("AI gateway error", aiResp.status, t);
-      return json({ error: "Échec de l'extraction" }, 500);
+      console.error("AI gateway error", aiResp.status, await aiResp.text());
+      return jsonResponse(req, { error: "Échec de l'extraction" }, 500);
     }
 
     const data = await aiResp.json();
     const call = data?.choices?.[0]?.message?.tool_calls?.[0];
-    let extracted: { rows: any[] } = { rows: [] };
+    let extracted: { rows: unknown[] } = { rows: [] };
     if (call?.function?.arguments) {
       try { extracted = JSON.parse(call.function.arguments); }
       catch (e) { console.error("JSON parse failed", e); }
     }
-    return json({ rows: extracted.rows ?? [] });
+    return jsonResponse(req, { rows: extracted.rows ?? [] });
   } catch (e) {
     console.error("extract-tabular error", e);
-    return json({ error: e instanceof Error ? e.message : "Erreur inconnue" }, 500);
+    return jsonResponse(req, { error: "Erreur interne" }, 500);
   }
 });
-
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}

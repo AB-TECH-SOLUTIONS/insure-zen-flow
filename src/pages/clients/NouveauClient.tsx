@@ -11,6 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DocumentScanner } from "@/components/scan/DocumentScanner";
 import { Loader2, Save, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
+
+// Téléphone CM (CEMAC) — accepte +237 6XX XXX XXX ou 9 chiffres locaux (espaces tolérés)
+const phoneSchema = z.string().trim().refine(
+  (v) => !v || /^(\+?237)?\s*[26]\d{8}$/.test(v.replace(/\s+/g, "")),
+  "Téléphone invalide (format +237 6XX XX XX XX)"
+);
+const emailSchema = z.string().trim().email("Email invalide").or(z.literal(""));
 
 interface Props { basePath: string }
 
@@ -48,6 +56,16 @@ export default function NouveauClient({ basePath }: Props) {
     if (!user) return;
     if (!form.full_name.trim()) {
       toast.error("Nom complet requis");
+      return;
+    }
+    const phoneCheck = phoneSchema.safeParse(form.phone);
+    if (!phoneCheck.success) {
+      toast.error(phoneCheck.error.errors[0]?.message ?? "Téléphone invalide");
+      return;
+    }
+    const emailCheck = emailSchema.safeParse(form.email);
+    if (!emailCheck.success) {
+      toast.error(emailCheck.error.errors[0]?.message ?? "Email invalide");
       return;
     }
     setSaving(true);

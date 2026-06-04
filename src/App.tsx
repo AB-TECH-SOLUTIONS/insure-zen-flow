@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -5,81 +6,86 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import PageLoader from "@/components/PageLoader";
+
+// Layout reste eager (utilisé dès la 1ère route protégée)
 import AppLayout from "@/components/layout/AppLayout";
 
+// Pages publiques — petites, gardées eager pour 1er paint
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
-import ClientDashboard from "./pages/dashboards/ClientDashboard";
-import AgentDashboard from "./pages/dashboards/AgentDashboard";
-import CourtierDashboard from "./pages/dashboards/CourtierDashboard";
-import AssureurDashboard from "./pages/dashboards/AssureurDashboard";
-import AdminDashboard from "./pages/dashboards/AdminDashboard";
+// Toutes les autres pages en lazy → code splitting par route
+const ClientDashboard = lazy(() => import("./pages/dashboards/ClientDashboard"));
+const AgentDashboard = lazy(() => import("./pages/dashboards/AgentDashboard"));
+const CourtierDashboard = lazy(() => import("./pages/dashboards/CourtierDashboard"));
+const AssureurDashboard = lazy(() => import("./pages/dashboards/AssureurDashboard"));
+const AdminDashboard = lazy(() => import("./pages/dashboards/AdminDashboard"));
+const GarageDashboard = lazy(() => import("./pages/dashboards/GarageDashboard"));
+const ExpertDashboard = lazy(() => import("./pages/dashboards/ExpertDashboard"));
+const HopitalDashboard = lazy(() => import("./pages/dashboards/HopitalDashboard"));
+const PharmacieDashboard = lazy(() => import("./pages/dashboards/PharmacieDashboard"));
+const AutoriteDashboard = lazy(() => import("./pages/dashboards/AutoriteDashboard"));
 
-import { PlaceholderPage } from "./components/PlaceholderPage";
-import NouvelleCotationAuto from "./pages/cotations/NouvelleCotationAuto";
-import NouvelleCotationVoyage from "./pages/cotations/NouvelleCotationVoyage";
-import NouvelleCotationVie from "./pages/cotations/NouvelleCotationVie";
-import SelecteurProduit from "./pages/cotations/SelecteurProduit";
-import ListeCotations from "./pages/cotations/ListeCotations";
-import DetailCotation from "./pages/cotations/DetailCotation";
-import ListeContrats from "./pages/contrats/ListeContrats";
-import DetailContrat from "./pages/contrats/DetailContrat";
-import ListePaiements from "./pages/paiements/ListePaiements";
-import ListeClients from "./pages/clients/ListeClients";
-import NouveauClient from "./pages/clients/NouveauClient";
-import DetailClient from "./pages/clients/DetailClient";
-import ListeVehicules from "./pages/vehicules/ListeVehicules";
-import Messagerie from "./pages/messages/Messagerie";
-import ListeSinistres from "./pages/sinistres/ListeSinistres";
-import DetailSinistre from "./pages/sinistres/DetailSinistre";
-import StockAttestations from "./pages/attestations/StockAttestations";
-import ImportExport from "./pages/import-export/ImportExport";
-import ListeTaches from "./pages/taches/ListeTaches";
-import SuiviCA from "./pages/finance/SuiviCA";
-import EspaceClient from "./pages/client/EspaceClient";
-import CotationAutoClient from "./pages/client/CotationAutoClient";
-import CotationVoyageClient from "./pages/client/CotationVoyageClient";
-import CotationVieClient from "./pages/client/CotationVieClient";
-import MesAccesCompagnies from "./pages/courtier/MesAccesCompagnies";
-import DemandesCourtiers from "./pages/assureur/DemandesCourtiers";
-import Equipe from "./pages/equipe/Equipe";
-import AcceptInvitation from "./pages/invitation/AcceptInvitation";
-import Logs from "./pages/admin/Logs";
-import Renouvellements from "./pages/contrats/Renouvellements";
-import Bordereaux from "./pages/finance/Bordereaux";
-import Compagnies from "./pages/admin/Compagnies";
-import Utilisateurs from "./pages/admin/Utilisateurs";
-import Roles from "./pages/admin/Roles";
-import Parametres from "./pages/admin/Parametres";
-import Portefeuille from "./pages/assureur/Portefeuille";
-import Reseau from "./pages/assureur/Reseau";
-import GarageDashboard from "./pages/dashboards/GarageDashboard";
-import ExpertDashboard from "./pages/dashboards/ExpertDashboard";
-import HopitalDashboard from "./pages/dashboards/HopitalDashboard";
-import PharmacieDashboard from "./pages/dashboards/PharmacieDashboard";
-import AutoriteDashboard from "./pages/dashboards/AutoriteDashboard";
-import DossiersSinistres from "./pages/garage/DossiersSinistres";
-import Factures from "./pages/garage/Factures";
-import Missions from "./pages/expert/Missions";
-import RapportExpertise from "./pages/expert/RapportExpertise";
-import NouveauDossier from "./pages/hopital/NouveauDossier";
-import ListeDossiers from "./pages/hopital/ListeDossiers";
-import NouvelleDispensation from "./pages/pharmacie/NouvelleDispensation";
-import Historique from "./pages/pharmacie/Historique";
-import DepotDocument from "./pages/autorite/DepotDocument";
-import MesDocuments from "./pages/autorite/MesDocuments";
-import VerificationAttestation from "./pages/autorite/VerificationAttestation";
-import MesCommissions from "./pages/courtier/MesCommissions";
-import CarteAssure from "./pages/client/CarteAssure";
-import ConstatAmiable from "./pages/sinistres/ConstatAmiable";
+const NouvelleCotationAuto = lazy(() => import("./pages/cotations/NouvelleCotationAuto"));
+const NouvelleCotationVoyage = lazy(() => import("./pages/cotations/NouvelleCotationVoyage"));
+const NouvelleCotationVie = lazy(() => import("./pages/cotations/NouvelleCotationVie"));
+const SelecteurProduit = lazy(() => import("./pages/cotations/SelecteurProduit"));
+const ListeCotations = lazy(() => import("./pages/cotations/ListeCotations"));
+const DetailCotation = lazy(() => import("./pages/cotations/DetailCotation"));
+const ListeContrats = lazy(() => import("./pages/contrats/ListeContrats"));
+const DetailContrat = lazy(() => import("./pages/contrats/DetailContrat"));
+const ListePaiements = lazy(() => import("./pages/paiements/ListePaiements"));
+const ListeClients = lazy(() => import("./pages/clients/ListeClients"));
+const NouveauClient = lazy(() => import("./pages/clients/NouveauClient"));
+const DetailClient = lazy(() => import("./pages/clients/DetailClient"));
+const ListeVehicules = lazy(() => import("./pages/vehicules/ListeVehicules"));
+const Messagerie = lazy(() => import("./pages/messages/Messagerie"));
+const ListeSinistres = lazy(() => import("./pages/sinistres/ListeSinistres"));
+const DetailSinistre = lazy(() => import("./pages/sinistres/DetailSinistre"));
+const StockAttestations = lazy(() => import("./pages/attestations/StockAttestations"));
+const ImportExport = lazy(() => import("./pages/import-export/ImportExport"));
+const ListeTaches = lazy(() => import("./pages/taches/ListeTaches"));
+const SuiviCA = lazy(() => import("./pages/finance/SuiviCA"));
+const EspaceClient = lazy(() => import("./pages/client/EspaceClient"));
+const CotationAutoClient = lazy(() => import("./pages/client/CotationAutoClient"));
+const CotationVoyageClient = lazy(() => import("./pages/client/CotationVoyageClient"));
+const CotationVieClient = lazy(() => import("./pages/client/CotationVieClient"));
+const MesAccesCompagnies = lazy(() => import("./pages/courtier/MesAccesCompagnies"));
+const DemandesCourtiers = lazy(() => import("./pages/assureur/DemandesCourtiers"));
+const Equipe = lazy(() => import("./pages/equipe/Equipe"));
+const AcceptInvitation = lazy(() => import("./pages/invitation/AcceptInvitation"));
+const EmailConfirmation = lazy(() => import("./pages/auth/EmailConfirmation"));
+const Logs = lazy(() => import("./pages/admin/Logs"));
+const Renouvellements = lazy(() => import("./pages/contrats/Renouvellements"));
+const Bordereaux = lazy(() => import("./pages/finance/Bordereaux"));
+const Compagnies = lazy(() => import("./pages/admin/Compagnies"));
+const Utilisateurs = lazy(() => import("./pages/admin/Utilisateurs"));
+const Roles = lazy(() => import("./pages/admin/Roles"));
+const Parametres = lazy(() => import("./pages/admin/Parametres"));
+const Portefeuille = lazy(() => import("./pages/assureur/Portefeuille"));
+const Reseau = lazy(() => import("./pages/assureur/Reseau"));
+const DossiersSinistres = lazy(() => import("./pages/garage/DossiersSinistres"));
+const Factures = lazy(() => import("./pages/garage/Factures"));
+const Missions = lazy(() => import("./pages/expert/Missions"));
+const RapportExpertise = lazy(() => import("./pages/expert/RapportExpertise"));
+const NouveauDossier = lazy(() => import("./pages/hopital/NouveauDossier"));
+const ListeDossiers = lazy(() => import("./pages/hopital/ListeDossiers"));
+const NouvelleDispensation = lazy(() => import("./pages/pharmacie/NouvelleDispensation"));
+const Historique = lazy(() => import("./pages/pharmacie/Historique"));
+const DepotDocument = lazy(() => import("./pages/autorite/DepotDocument"));
+const MesDocuments = lazy(() => import("./pages/autorite/MesDocuments"));
+const VerificationAttestation = lazy(() => import("./pages/autorite/VerificationAttestation"));
+const MesCommissions = lazy(() => import("./pages/courtier/MesCommissions"));
+const CarteAssure = lazy(() => import("./pages/client/CarteAssure"));
+const ConstatAmiable = lazy(() => import("./pages/sinistres/ConstatAmiable"));
 
-const queryClient = new QueryClient();
-
-const Stub = (props: { title: string; description?: string; sprint?: string }) => (
-  <PlaceholderPage {...props} />
-);
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: 2, retryDelay: 1000, staleTime: 30_000 },
+  },
+});
 
 // Routes communes cotation + contrats pour un rôle donné
 const RoleRoutes = ({ base }: { base: string }) => (
@@ -114,9 +120,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/auth/callback" element={<EmailConfirmation />} />
             <Route path="/invitation/:token" element={<AcceptInvitation />} />
 
             {/* CLIENT */}
@@ -218,6 +226,7 @@ const App = () => (
 
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

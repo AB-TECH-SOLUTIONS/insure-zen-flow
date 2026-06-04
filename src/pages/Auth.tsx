@@ -15,6 +15,21 @@ import { ROLE_HOME } from "@/types/roles";
 import { PasswordInput } from "@/components/auth/PasswordInput";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { MagicLinkForm } from "@/components/auth/MagicLinkForm";
+import { z } from "zod";
+
+const emailSchema = z.string().trim().email("Email invalide").max(200);
+
+// Convertit les codes d'erreur Supabase courants en français.
+function translateAuthError(msg: string): string {
+  const m = msg.toLowerCase();
+  if (m.includes("invalid login") || m.includes("invalid credentials")) return "Email ou mot de passe incorrect.";
+  if (m.includes("email not confirmed")) return "Email non confirmé. Vérifiez votre boîte mail.";
+  if (m.includes("user already registered")) return "Un compte existe déjà avec cet email.";
+  if (m.includes("password should be at least")) return "Le mot de passe doit faire au moins 6 caractères.";
+  if (m.includes("rate limit") || m.includes("too many")) return "Trop de tentatives, patientez quelques minutes.";
+  if (m.includes("network") || m.includes("fetch")) return "Connexion réseau indisponible, réessayez.";
+  return msg;
+}
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -47,11 +62,16 @@ export default function Auth() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    const emailCheck = emailSchema.safeParse(loginEmail);
+    if (!emailCheck.success) {
+      toast.error(emailCheck.error.errors[0]?.message ?? "Email invalide");
+      return;
+    }
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPwd });
     setBusy(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(translateAuthError(error.message));
       return;
     }
     toast.success("Connecté");
@@ -59,8 +79,17 @@ export default function Auth() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    const emailCheck = emailSchema.safeParse(email);
+    if (!emailCheck.success) {
+      toast.error(emailCheck.error.errors[0]?.message ?? "Email invalide");
+      return;
+    }
+    if (pwd.length < 6) {
+      toast.error("Mot de passe : 6 caractères minimum.");
+      return;
+    }
     setBusy(true);
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = `${window.location.origin}/auth/callback`;
     const { error } = await supabase.auth.signUp({
       email,
       password: pwd,
@@ -75,12 +104,12 @@ export default function Auth() {
 
     if (error) {
       setBusy(false);
-      toast.error(error.message);
+      toast.error(translateAuthError(error.message));
       return;
     }
 
     setBusy(false);
-    toast.success("Compte créé. Bienvenue !");
+    toast.success("Compte créé. Vérifiez votre boîte mail pour confirmer.");
   };
 
   return (

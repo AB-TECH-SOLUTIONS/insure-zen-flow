@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { VehiculeFormDialog } from "@/components/vehicules/VehiculeFormDialog";
-import { ArrowLeft, Plus, Save, Car, FileText, Receipt, Loader2, Pencil } from "lucide-react";
+import { ArrowLeft, Plus, Save, Car, FileText, Receipt, Loader2, Pencil, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { formatFCFA } from "@/lib/format";
 
@@ -86,9 +86,16 @@ export default function DetailClient({ basePath }: Props) {
         title={client.full_name}
         description={`${client.kind === "personne_morale" ? "Entreprise" : "Particulier"}${client.phone ? " · " + client.phone : ""}`}
         actions={
-          <Button variant="ghost" onClick={() => navigate(`${basePath}/clients`)}>
-            <ArrowLeft className="h-4 w-4 mr-2" /> Retour
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild>
+              <Link to={`${basePath}/cotations/nouvelle?client=${client.id}`}>
+                <Sparkles className="h-4 w-4 mr-2" /> Nouvelle cotation
+              </Link>
+            </Button>
+            <Button variant="ghost" onClick={() => navigate(`${basePath}/clients`)}>
+              <ArrowLeft className="h-4 w-4 mr-2" /> Retour
+            </Button>
+          </div>
         }
       />
 

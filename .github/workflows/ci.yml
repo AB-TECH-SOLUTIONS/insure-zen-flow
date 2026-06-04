@@ -43,7 +43,7 @@ jobs:
         run: npx vitest run --coverage --coverage.thresholds.lines=50 --coverage.thresholds.statements=50 --coverage.thresholds.functions=50 --coverage.thresholds.branches=40
       - name: Upload coverage artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage/

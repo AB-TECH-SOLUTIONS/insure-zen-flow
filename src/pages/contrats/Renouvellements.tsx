@@ -119,6 +119,9 @@ export default function Renouvellements({ basePath }: { basePath: string }) {
         </div>
         <div className="flex items-center gap-3">
           <span className="font-mono text-sm">{formatFCFA(r.total_premium)}</span>
+          {withAction && d >= 0 && d <= 15 && (
+            <Badge variant="destructive">Urgent</Badge>
+          )}
           <Badge variant={r.renewal_status === "renouvele" ? "default" : "secondary"}>{r.renewal_status}</Badge>
           {withAction && (
             <Button size="sm" onClick={() => renouveler(r)}>

@@ -42,8 +42,8 @@ export default function AIConfig() {
       const upserts = [
         { key: "awa_enabled", value: String(enabled) },
         { key: "awa_system_prompt", value: systemPrompt },
-      ];
-      const { error } = await supabase.from("parametres" as never).upsert(upserts, { onConflict: "key" });
+      ] as never;
+      const { error } = await supabase.from("parametres" as never).upsert(upserts, { onConflict: "key" } as never);
       if (error) throw error;
       toast.success("Configuration enregistrée");
     } catch (e) {

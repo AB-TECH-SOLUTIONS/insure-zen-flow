@@ -16,10 +16,30 @@ const SUGGESTIONS = [
   "❓ Aide",
 ];
 
+const STORAGE_KEY = "awa_chat_history_v1";
+const MAX_MSGS = 50;
+const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+function loadHistory(): Msg[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as { ts: number; messages: Msg[] };
+    if (Date.now() - parsed.ts > MAX_AGE_MS) return [];
+    return parsed.messages.slice(-MAX_MSGS);
+  } catch { return []; }
+}
+
+function saveHistory(messages: Msg[]) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ts: Date.now(), messages: messages.slice(-MAX_MSGS) }));
+  } catch { /* ignore */ }
+}
+
 export default function ChatbotWidget() {
   const { user, role } = useAuth();
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([]);
+  const [messages, setMessages] = useState<Msg[]>(() => loadHistory());
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -27,6 +47,8 @@ export default function ChatbotWidget() {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  useEffect(() => { saveHistory(messages); }, [messages]);
 
   if (role !== "client") return null;
 
@@ -105,12 +127,20 @@ export default function ChatbotWidget() {
         )}
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[85%] p-3 text-sm whitespace-pre-wrap ${
-              m.role === "user"
-                ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-none"
-                : "bg-muted rounded-2xl rounded-tl-none"
-            }`}>
-              {m.content}
+            <div className="group max-w-[85%] relative">
+              <div className={`p-3 text-sm whitespace-pre-wrap ${
+                m.role === "user"
+                  ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-none"
+                  : "bg-muted rounded-2xl rounded-tl-none"
+              }`}>
+                {m.content}
+              </div>
+              {m.role === "assistant" && (
+                <button
+                  onClick={() => { navigator.clipboard.writeText(m.content); toast.success("Copié"); }}
+                  className="opacity-0 group-hover:opacity-100 transition text-[10px] text-muted-foreground mt-1 hover:underline"
+                >Copier</button>
+              )}
             </div>
           </div>
         ))}

@@ -1992,9 +1992,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_invitation: { Args: { _token: string }; Returns: Json }
       check_and_increment_rate_limit: {
         Args: { _bucket: string; _identifier: string; _max_per_minute: number }
         Returns: boolean
+      }
+      get_invitation_by_token: {
+        Args: { _token: string }
+        Returns: {
+          company_id: string
+          email: string
+          expires_at: string
+          id: string
+          position_id: string
+          role: Database["public"]["Enums"]["app_role"]
+          status: string
+        }[]
       }
       get_primary_company: { Args: { _user_id: string }; Returns: string }
       get_user_companies: { Args: { _user_id: string }; Returns: string[] }

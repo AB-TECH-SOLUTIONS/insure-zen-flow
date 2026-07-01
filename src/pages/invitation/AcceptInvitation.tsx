@@ -18,31 +18,23 @@ export default function AcceptInvitation() {
   useEffect(() => {
     if (!token) return;
     (async () => {
-      const { data } = await supabase.from("invitations").select("*").eq("token", token).maybeSingle();
-      if (!data) return setState("invalid");
-      if (data.status !== "pending") return setState("invalid");
-      if (new Date(data.expires_at) < new Date()) return setState("invalid");
-      setInvite(data);
+      const { data, error } = await supabase.rpc("get_invitation_by_token", { _token: token });
+      const row = Array.isArray(data) ? data[0] : data;
+      if (error || !row) return setState("invalid");
+      setInvite(row);
       setState("ready");
     })();
   }, [token]);
 
   const accept = async () => {
-    if (!user || !invite) return;
+    if (!user || !invite || !token) return;
     setState("accepting");
-    // 1. ajouter le rôle s'il manque
-    await supabase.from("user_roles").upsert({ user_id: user.id, role: invite.role }, { onConflict: "user_id,role" as any });
-    // 2. compagnie principale si non définie
-    if (invite.company_id) {
-      await supabase.from("profiles").update({ primary_company_id: invite.company_id }).eq("user_id", user.id);
-      await supabase.from("team_members").upsert({
-        company_id: invite.company_id, user_id: user.id, position_id: invite.position_id,
-      } as any, { onConflict: "company_id,user_id" as any });
+    const { error } = await supabase.rpc("accept_invitation", { _token: token });
+    if (error) {
+      toast.error("Impossible d'accepter cette invitation");
+      setState("invalid");
+      return;
     }
-    // 3. marquer acceptée
-    await supabase.from("invitations").update({
-      status: "accepted", accepted_at: new Date().toISOString(), accepted_by: user.id,
-    }).eq("id", invite.id);
     await refresh();
     toast.success("Invitation acceptée");
     setState("done");

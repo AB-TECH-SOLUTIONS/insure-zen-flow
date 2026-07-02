@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          country_code: string | null
+          created_at: string
+          description: string | null
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          country_code?: string | null
+          created_at?: string
+          description?: string | null
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          country_code?: string | null
+          created_at?: string
+          description?: string | null
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "app_settings_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       attestations_stock: {
         Row: {
           assigned_to: string | null
@@ -1328,6 +1366,88 @@ export type Database = {
           },
         ]
       }
+      partenaires: {
+        Row: {
+          actif: boolean
+          adresse: string | null
+          agrement_num: string | null
+          code: string | null
+          company_id: string | null
+          created_at: string
+          email: string | null
+          id: string
+          logo_url: string | null
+          nom: string
+          pays_code: string
+          specialites: Json | null
+          tarifs_conventionnes: Json | null
+          telephone: string | null
+          type: Database["public"]["Enums"]["partenaire_type"]
+          updated_at: string
+          ville_id: string | null
+        }
+        Insert: {
+          actif?: boolean
+          adresse?: string | null
+          agrement_num?: string | null
+          code?: string | null
+          company_id?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          nom: string
+          pays_code?: string
+          specialites?: Json | null
+          tarifs_conventionnes?: Json | null
+          telephone?: string | null
+          type: Database["public"]["Enums"]["partenaire_type"]
+          updated_at?: string
+          ville_id?: string | null
+        }
+        Update: {
+          actif?: boolean
+          adresse?: string | null
+          agrement_num?: string | null
+          code?: string | null
+          company_id?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          nom?: string
+          pays_code?: string
+          specialites?: Json | null
+          tarifs_conventionnes?: Json | null
+          telephone?: string | null
+          type?: Database["public"]["Enums"]["partenaire_type"]
+          updated_at?: string
+          ville_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partenaires_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partenaires_pays_code_fkey"
+            columns: ["pays_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "partenaires_ville_id_fkey"
+            columns: ["ville_id"]
+            isOneToOne: false
+            referencedRelation: "villes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -1404,6 +1524,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pays_cima: {
+        Row: {
+          actif: boolean
+          code: string
+          created_at: string
+          devise: string
+          nom: string
+          tva_taux: number
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code: string
+          created_at?: string
+          devise?: string
+          nom: string
+          tva_taux?: number
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string
+          created_at?: string
+          devise?: string
+          nom?: string
+          tva_taux?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       pharmacie_claims: {
         Row: {
@@ -1716,6 +1866,38 @@ export type Database = {
         }
         Relationships: []
       }
+      regions: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          nom: string
+          pays_code: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          nom: string
+          pays_code: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          nom?: string
+          pays_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regions_pays_code_fkey"
+            columns: ["pays_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       revenue_objectives: {
         Row: {
           company_id: string
@@ -1751,6 +1933,624 @@ export type Database = {
           year?: number
         }
         Relationships: []
+      }
+      tarif_accessoires: {
+        Row: {
+          actif: boolean
+          country_code: string
+          created_at: string
+          date_effet: string
+          date_fin: string | null
+          id: string
+          montant: number
+          prime_nette_max: number
+          prime_nette_min: number
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          country_code: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          montant: number
+          prime_nette_max: number
+          prime_nette_min: number
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          country_code?: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          montant?: number
+          prime_nette_max?: number
+          prime_nette_min?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_accessoires_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      tarif_bareme_rc: {
+        Row: {
+          actif: boolean
+          categorie: string
+          country_code: string
+          created_at: string
+          created_by: string | null
+          cu_max_kg: number | null
+          cv_max: number | null
+          cv_min: number | null
+          date_effet: string
+          date_fin: string | null
+          id: string
+          places_max: number | null
+          prime_annuelle: number
+          produit: Database["public"]["Enums"]["tarif_produit"]
+          ptac_max_kg: number | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          categorie: string
+          country_code: string
+          created_at?: string
+          created_by?: string | null
+          cu_max_kg?: number | null
+          cv_max?: number | null
+          cv_min?: number | null
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          places_max?: number | null
+          prime_annuelle: number
+          produit: Database["public"]["Enums"]["tarif_produit"]
+          ptac_max_kg?: number | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          categorie?: string
+          country_code?: string
+          created_at?: string
+          created_by?: string | null
+          cu_max_kg?: number | null
+          cv_max?: number | null
+          cv_min?: number | null
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          places_max?: number | null
+          prime_annuelle?: number
+          produit?: Database["public"]["Enums"]["tarif_produit"]
+          ptac_max_kg?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_bareme_rc_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      tarif_dta_vignette: {
+        Row: {
+          actif: boolean
+          country_code: string
+          created_at: string
+          cv_max: number
+          cv_min: number
+          date_effet: string
+          date_fin: string | null
+          id: string
+          montant: number
+          updated_at: string
+          usage: Database["public"]["Enums"]["tarif_usage_dta"]
+        }
+        Insert: {
+          actif?: boolean
+          country_code: string
+          created_at?: string
+          cv_max: number
+          cv_min: number
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          montant: number
+          updated_at?: string
+          usage: Database["public"]["Enums"]["tarif_usage_dta"]
+        }
+        Update: {
+          actif?: boolean
+          country_code?: string
+          created_at?: string
+          cv_max?: number
+          cv_min?: number
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          montant?: number
+          updated_at?: string
+          usage?: Database["public"]["Enums"]["tarif_usage_dta"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_dta_vignette_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      tarif_frais_fixes: {
+        Row: {
+          actif: boolean
+          code: string
+          country_code: string
+          created_at: string
+          date_effet: string
+          date_fin: string | null
+          id: string
+          label: string
+          montant: number
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code: string
+          country_code: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          label: string
+          montant: number
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string
+          country_code?: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          label?: string
+          montant?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_frais_fixes_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      tarif_gmc_bareme: {
+        Row: {
+          actif: boolean
+          age_max: number
+          age_min: number
+          country_code: string
+          created_at: string
+          date_effet: string
+          date_fin: string | null
+          formule: string
+          id: string
+          plafond_annuel: number
+          prime_annuelle: number
+          ticket_moderateur: number
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          age_max: number
+          age_min: number
+          country_code: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          formule: string
+          id?: string
+          plafond_annuel: number
+          prime_annuelle: number
+          ticket_moderateur?: number
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          age_max?: number
+          age_min?: number
+          country_code?: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          formule?: string
+          id?: string
+          plafond_annuel?: number
+          prime_annuelle?: number
+          ticket_moderateur?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_gmc_bareme_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      tarif_options_ipt: {
+        Row: {
+          actif: boolean
+          capital_deces: number
+          capital_invalidite: number
+          code: string
+          country_code: string
+          created_at: string
+          date_effet: string
+          date_fin: string | null
+          frais_medicaux: number
+          id: string
+          label: string
+          prime_par_place: number
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          capital_deces: number
+          capital_invalidite: number
+          code: string
+          country_code: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          frais_medicaux: number
+          id?: string
+          label: string
+          prime_par_place: number
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          capital_deces?: number
+          capital_invalidite?: number
+          code?: string
+          country_code?: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          frais_medicaux?: number
+          id?: string
+          label?: string
+          prime_par_place?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_options_ipt_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      tarif_reductions: {
+        Row: {
+          actif: boolean
+          code: string
+          country_code: string
+          created_at: string
+          date_effet: string
+          date_fin: string | null
+          id: string
+          label: string
+          plafond: number | null
+          taux_max: number
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code: string
+          country_code: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          label: string
+          plafond?: number | null
+          taux_max: number
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string
+          country_code?: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          label?: string
+          plafond?: number | null
+          taux_max?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_reductions_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      tarif_taux_garantie: {
+        Row: {
+          actif: boolean
+          base_calcul: Database["public"]["Enums"]["tarif_base_calcul"]
+          categorie: string
+          code_garantie: string
+          country_code: string
+          created_at: string
+          created_by: string | null
+          date_effet: string
+          date_fin: string | null
+          id: string
+          label: string
+          produit: Database["public"]["Enums"]["tarif_produit"]
+          taux: number
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          base_calcul: Database["public"]["Enums"]["tarif_base_calcul"]
+          categorie: string
+          code_garantie: string
+          country_code: string
+          created_at?: string
+          created_by?: string | null
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          label: string
+          produit: Database["public"]["Enums"]["tarif_produit"]
+          taux: number
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          base_calcul?: Database["public"]["Enums"]["tarif_base_calcul"]
+          categorie?: string
+          code_garantie?: string
+          country_code?: string
+          created_at?: string
+          created_by?: string | null
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          label?: string
+          produit?: Database["public"]["Enums"]["tarif_produit"]
+          taux?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_taux_garantie_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      tarif_vie_bareme: {
+        Row: {
+          actif: boolean
+          age_max: number
+          age_min: number
+          country_code: string
+          created_at: string
+          date_effet: string
+          date_fin: string | null
+          id: string
+          taux_annuel: number
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          age_max: number
+          age_min: number
+          country_code: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          taux_annuel: number
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          age_max?: number
+          age_min?: number
+          country_code?: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          id?: string
+          taux_annuel?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_vie_bareme_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      tarif_vie_periodicites: {
+        Row: {
+          actif: boolean
+          code: string
+          country_code: string
+          created_at: string
+          diviseur: number
+          id: string
+          label: string
+          majoration: number
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code: string
+          country_code: string
+          created_at?: string
+          diviseur: number
+          id?: string
+          label: string
+          majoration?: number
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string
+          country_code?: string
+          created_at?: string
+          diviseur?: number
+          id?: string
+          label?: string
+          majoration?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_vie_periodicites_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      tarif_voyage_bareme: {
+        Row: {
+          actif: boolean
+          age_max: number
+          age_min: number
+          country_code: string
+          created_at: string
+          date_effet: string
+          date_fin: string | null
+          duree_max: number
+          duree_min: number
+          id: string
+          prime: number
+          updated_at: string
+          zone_code: string
+        }
+        Insert: {
+          actif?: boolean
+          age_max: number
+          age_min: number
+          country_code: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          duree_max: number
+          duree_min: number
+          id?: string
+          prime: number
+          updated_at?: string
+          zone_code: string
+        }
+        Update: {
+          actif?: boolean
+          age_max?: number
+          age_min?: number
+          country_code?: string
+          created_at?: string
+          date_effet?: string
+          date_fin?: string | null
+          duree_max?: number
+          duree_min?: number
+          id?: string
+          prime?: number
+          updated_at?: string
+          zone_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_voyage_bareme_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      tarif_voyage_zones: {
+        Row: {
+          actif: boolean
+          coefficient: number
+          country_code: string
+          created_at: string
+          id: string
+          label: string
+          updated_at: string
+          zone_code: string
+        }
+        Insert: {
+          actif?: boolean
+          coefficient?: number
+          country_code: string
+          created_at?: string
+          id?: string
+          label: string
+          updated_at?: string
+          zone_code: string
+        }
+        Update: {
+          actif?: boolean
+          coefficient?: number
+          country_code?: string
+          created_at?: string
+          id?: string
+          label?: string
+          updated_at?: string
+          zone_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarif_voyage_zones_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "pays_cima"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -1987,6 +2787,38 @@ export type Database = {
           },
         ]
       }
+      villes: {
+        Row: {
+          created_at: string
+          id: string
+          nom: string
+          region_id: string
+          zone_cema: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nom: string
+          region_id: string
+          zone_cema?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nom?: string
+          region_id?: string
+          zone_cema?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "villes_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -2018,6 +2850,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
       next_contract_number: {
         Args: {
           _company_id: string
@@ -2049,6 +2882,14 @@ export type Database = {
         | "clos"
       client_kind: "personne_physique" | "personne_morale"
       contract_status: "actif" | "suspendu" | "resilie" | "expire"
+      partenaire_type:
+        | "hopital"
+        | "clinique"
+        | "pharmacie"
+        | "garage"
+        | "expert"
+        | "centre_expertise"
+        | "laboratoire"
       payment_method:
         | "mobile_money_mtn"
         | "mobile_money_orange"
@@ -2059,6 +2900,13 @@ export type Database = {
       payment_status: "en_attente" | "paye" | "echoue" | "rembourse"
       quote_status: "brouillon" | "envoyee" | "acceptee" | "refusee" | "expiree"
       quote_type: "auto" | "voyage" | "risques_divers" | "vie"
+      tarif_base_calcul:
+        | "valeur_neuve"
+        | "valeur_venale"
+        | "prime_rc"
+        | "forfait"
+      tarif_produit: "auto" | "voyage" | "vie" | "gmc" | "risques_divers"
+      tarif_usage_dta: "transport_commun" | "autre"
       task_priority: "low" | "med" | "high"
       task_status: "todo" | "wip" | "done" | "blocked"
     }
@@ -2212,6 +3060,15 @@ export const Constants = {
       ],
       client_kind: ["personne_physique", "personne_morale"],
       contract_status: ["actif", "suspendu", "resilie", "expire"],
+      partenaire_type: [
+        "hopital",
+        "clinique",
+        "pharmacie",
+        "garage",
+        "expert",
+        "centre_expertise",
+        "laboratoire",
+      ],
       payment_method: [
         "mobile_money_mtn",
         "mobile_money_orange",
@@ -2223,6 +3080,14 @@ export const Constants = {
       payment_status: ["en_attente", "paye", "echoue", "rembourse"],
       quote_status: ["brouillon", "envoyee", "acceptee", "refusee", "expiree"],
       quote_type: ["auto", "voyage", "risques_divers", "vie"],
+      tarif_base_calcul: [
+        "valeur_neuve",
+        "valeur_venale",
+        "prime_rc",
+        "forfait",
+      ],
+      tarif_produit: ["auto", "voyage", "vie", "gmc", "risques_divers"],
+      tarif_usage_dta: ["transport_commun", "autre"],
       task_priority: ["low", "med", "high"],
       task_status: ["todo", "wip", "done", "blocked"],
     },

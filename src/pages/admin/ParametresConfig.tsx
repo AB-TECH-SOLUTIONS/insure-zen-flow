@@ -217,10 +217,10 @@ function PartenairesPanel({ country }: { country: string }) {
     mutationFn: async (row: AnyRow) => {
       const payload = { ...row, pays_code: country };
       if (row.id) {
-        const { error } = await supabase.from("partenaires").update(payload).eq("id", row.id);
+        const { error } = await supabase.from("partenaires").update(payload as any).eq("id", row.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("partenaires").insert(payload);
+        const { error } = await supabase.from("partenaires").insert(payload as any);
         if (error) throw error;
       }
     },
@@ -368,7 +368,7 @@ function PaysPanel() {
   });
   const update = useMutation({
     mutationFn: async ({ code, patch }: { code: string; patch: AnyRow }) => {
-      const { error } = await supabase.from("pays_cima").update(patch).eq("code", code);
+      const { error } = await supabase.from("pays_cima").update(patch as any).eq("code", code);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["pays_cima"] }),

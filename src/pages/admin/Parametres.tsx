@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Users, FileCheck, AlertTriangle, Download, AlertOctagon } from "lucide-react";
+import { Users, FileCheck, AlertTriangle, Download, AlertOctagon, Settings2, Globe, Building2, Sliders } from "lucide-react";
 
 export default function Parametres() {
   const nav = useNavigate();
@@ -30,6 +30,27 @@ export default function Parametres() {
   return (
     <div className="space-y-6">
       <PageHeader title="Paramètres" description="Configuration globale de la plateforme." />
+
+      <Card className="p-5">
+        <h2 className="font-display font-semibold mb-3">Configuration dynamique</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Modifiez tarifs, référentiels, partenaires et paramètres système sans redéploiement.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Button variant="outline" className="justify-start h-auto py-3" onClick={() => nav("/admin/configuration")}>
+            <Sliders className="h-4 w-4 mr-2" /> Tarifs & barèmes
+          </Button>
+          <Button variant="outline" className="justify-start h-auto py-3" onClick={() => nav("/admin/configuration")}>
+            <Building2 className="h-4 w-4 mr-2" /> Partenaires
+          </Button>
+          <Button variant="outline" className="justify-start h-auto py-3" onClick={() => nav("/admin/configuration")}>
+            <Globe className="h-4 w-4 mr-2" /> Pays CIMA
+          </Button>
+          <Button variant="outline" className="justify-start h-auto py-3" onClick={() => nav("/admin/configuration")}>
+            <Settings2 className="h-4 w-4 mr-2" /> Système
+          </Button>
+        </div>
+      </Card>
 
       <Card className="p-5">
         <h2 className="font-display font-semibold mb-3">Plateforme</h2>

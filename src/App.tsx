@@ -64,6 +64,7 @@ const Compagnies = lazy(() => import("./pages/admin/Compagnies"));
 const Utilisateurs = lazy(() => import("./pages/admin/Utilisateurs"));
 const Roles = lazy(() => import("./pages/admin/Roles"));
 const Parametres = lazy(() => import("./pages/admin/Parametres"));
+const ParametresConfig = lazy(() => import("./pages/admin/ParametresConfig"));
 const AIConfig = lazy(() => import("./pages/admin/AIConfig"));
 const Portefeuille = lazy(() => import("./pages/assureur/Portefeuille"));
 const Reseau = lazy(() => import("./pages/assureur/Reseau"));
@@ -182,6 +183,7 @@ const App = () => (
               <Route path="/admin/roles" element={<Roles />} />
               <Route path="/admin/logs" element={<Logs />} />
               <Route path="/admin/parametres" element={<Parametres />} />
+              <Route path="/admin/configuration" element={<ParametresConfig />} />
               <Route path="/admin/ai-config" element={<AIConfig />} />
             </Route>
 

@@ -1937,6 +1937,7 @@ export type Database = {
       tarif_accessoires: {
         Row: {
           actif: boolean
+          company_id: string
           country_code: string
           created_at: string
           date_effet: string
@@ -1949,6 +1950,7 @@ export type Database = {
         }
         Insert: {
           actif?: boolean
+          company_id: string
           country_code: string
           created_at?: string
           date_effet?: string
@@ -1961,6 +1963,7 @@ export type Database = {
         }
         Update: {
           actif?: boolean
+          company_id?: string
           country_code?: string
           created_at?: string
           date_effet?: string
@@ -1972,6 +1975,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tarif_accessoires_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tarif_accessoires_country_code_fkey"
             columns: ["country_code"]
@@ -1985,6 +1995,7 @@ export type Database = {
         Row: {
           actif: boolean
           categorie: string
+          company_id: string
           country_code: string
           created_at: string
           created_by: string | null
@@ -2003,6 +2014,7 @@ export type Database = {
         Insert: {
           actif?: boolean
           categorie: string
+          company_id: string
           country_code: string
           created_at?: string
           created_by?: string | null
@@ -2021,6 +2033,7 @@ export type Database = {
         Update: {
           actif?: boolean
           categorie?: string
+          company_id?: string
           country_code?: string
           created_at?: string
           created_by?: string | null
@@ -2038,6 +2051,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "tarif_bareme_rc_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tarif_bareme_rc_country_code_fkey"
             columns: ["country_code"]
             isOneToOne: false
@@ -2049,6 +2069,7 @@ export type Database = {
       tarif_dta_vignette: {
         Row: {
           actif: boolean
+          company_id: string
           country_code: string
           created_at: string
           cv_max: number
@@ -2062,6 +2083,7 @@ export type Database = {
         }
         Insert: {
           actif?: boolean
+          company_id: string
           country_code: string
           created_at?: string
           cv_max: number
@@ -2075,6 +2097,7 @@ export type Database = {
         }
         Update: {
           actif?: boolean
+          company_id?: string
           country_code?: string
           created_at?: string
           cv_max?: number
@@ -2088,6 +2111,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "tarif_dta_vignette_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tarif_dta_vignette_country_code_fkey"
             columns: ["country_code"]
             isOneToOne: false
@@ -2100,6 +2130,7 @@ export type Database = {
         Row: {
           actif: boolean
           code: string
+          company_id: string
           country_code: string
           created_at: string
           date_effet: string
@@ -2112,6 +2143,7 @@ export type Database = {
         Insert: {
           actif?: boolean
           code: string
+          company_id: string
           country_code: string
           created_at?: string
           date_effet?: string
@@ -2124,6 +2156,7 @@ export type Database = {
         Update: {
           actif?: boolean
           code?: string
+          company_id?: string
           country_code?: string
           created_at?: string
           date_effet?: string
@@ -2134,6 +2167,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tarif_frais_fixes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tarif_frais_fixes_country_code_fkey"
             columns: ["country_code"]
@@ -2148,6 +2188,7 @@ export type Database = {
           actif: boolean
           age_max: number
           age_min: number
+          company_id: string
           country_code: string
           created_at: string
           date_effet: string
@@ -2163,6 +2204,7 @@ export type Database = {
           actif?: boolean
           age_max: number
           age_min: number
+          company_id: string
           country_code: string
           created_at?: string
           date_effet?: string
@@ -2178,6 +2220,7 @@ export type Database = {
           actif?: boolean
           age_max?: number
           age_min?: number
+          company_id?: string
           country_code?: string
           created_at?: string
           date_effet?: string
@@ -2190,6 +2233,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tarif_gmc_bareme_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tarif_gmc_bareme_country_code_fkey"
             columns: ["country_code"]
@@ -2205,6 +2255,7 @@ export type Database = {
           capital_deces: number
           capital_invalidite: number
           code: string
+          company_id: string
           country_code: string
           created_at: string
           date_effet: string
@@ -2220,6 +2271,7 @@ export type Database = {
           capital_deces: number
           capital_invalidite: number
           code: string
+          company_id: string
           country_code: string
           created_at?: string
           date_effet?: string
@@ -2235,6 +2287,7 @@ export type Database = {
           capital_deces?: number
           capital_invalidite?: number
           code?: string
+          company_id?: string
           country_code?: string
           created_at?: string
           date_effet?: string
@@ -2246,6 +2299,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tarif_options_ipt_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tarif_options_ipt_country_code_fkey"
             columns: ["country_code"]
@@ -2259,6 +2319,7 @@ export type Database = {
         Row: {
           actif: boolean
           code: string
+          company_id: string
           country_code: string
           created_at: string
           date_effet: string
@@ -2272,6 +2333,7 @@ export type Database = {
         Insert: {
           actif?: boolean
           code: string
+          company_id: string
           country_code: string
           created_at?: string
           date_effet?: string
@@ -2285,6 +2347,7 @@ export type Database = {
         Update: {
           actif?: boolean
           code?: string
+          company_id?: string
           country_code?: string
           created_at?: string
           date_effet?: string
@@ -2296,6 +2359,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tarif_reductions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tarif_reductions_country_code_fkey"
             columns: ["country_code"]
@@ -2311,6 +2381,7 @@ export type Database = {
           base_calcul: Database["public"]["Enums"]["tarif_base_calcul"]
           categorie: string
           code_garantie: string
+          company_id: string
           country_code: string
           created_at: string
           created_by: string | null
@@ -2327,6 +2398,7 @@ export type Database = {
           base_calcul: Database["public"]["Enums"]["tarif_base_calcul"]
           categorie: string
           code_garantie: string
+          company_id: string
           country_code: string
           created_at?: string
           created_by?: string | null
@@ -2343,6 +2415,7 @@ export type Database = {
           base_calcul?: Database["public"]["Enums"]["tarif_base_calcul"]
           categorie?: string
           code_garantie?: string
+          company_id?: string
           country_code?: string
           created_at?: string
           created_by?: string | null
@@ -2355,6 +2428,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tarif_taux_garantie_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tarif_taux_garantie_country_code_fkey"
             columns: ["country_code"]
@@ -2369,6 +2449,7 @@ export type Database = {
           actif: boolean
           age_max: number
           age_min: number
+          company_id: string
           country_code: string
           created_at: string
           date_effet: string
@@ -2381,6 +2462,7 @@ export type Database = {
           actif?: boolean
           age_max: number
           age_min: number
+          company_id: string
           country_code: string
           created_at?: string
           date_effet?: string
@@ -2393,6 +2475,7 @@ export type Database = {
           actif?: boolean
           age_max?: number
           age_min?: number
+          company_id?: string
           country_code?: string
           created_at?: string
           date_effet?: string
@@ -2402,6 +2485,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tarif_vie_bareme_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tarif_vie_bareme_country_code_fkey"
             columns: ["country_code"]
@@ -2415,6 +2505,7 @@ export type Database = {
         Row: {
           actif: boolean
           code: string
+          company_id: string
           country_code: string
           created_at: string
           diviseur: number
@@ -2426,6 +2517,7 @@ export type Database = {
         Insert: {
           actif?: boolean
           code: string
+          company_id: string
           country_code: string
           created_at?: string
           diviseur: number
@@ -2437,6 +2529,7 @@ export type Database = {
         Update: {
           actif?: boolean
           code?: string
+          company_id?: string
           country_code?: string
           created_at?: string
           diviseur?: number
@@ -2446,6 +2539,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tarif_vie_periodicites_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tarif_vie_periodicites_country_code_fkey"
             columns: ["country_code"]
@@ -2460,6 +2560,7 @@ export type Database = {
           actif: boolean
           age_max: number
           age_min: number
+          company_id: string
           country_code: string
           created_at: string
           date_effet: string
@@ -2475,6 +2576,7 @@ export type Database = {
           actif?: boolean
           age_max: number
           age_min: number
+          company_id: string
           country_code: string
           created_at?: string
           date_effet?: string
@@ -2490,6 +2592,7 @@ export type Database = {
           actif?: boolean
           age_max?: number
           age_min?: number
+          company_id?: string
           country_code?: string
           created_at?: string
           date_effet?: string
@@ -2503,6 +2606,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "tarif_voyage_bareme_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tarif_voyage_bareme_country_code_fkey"
             columns: ["country_code"]
             isOneToOne: false
@@ -2515,6 +2625,7 @@ export type Database = {
         Row: {
           actif: boolean
           coefficient: number
+          company_id: string
           country_code: string
           created_at: string
           id: string
@@ -2525,6 +2636,7 @@ export type Database = {
         Insert: {
           actif?: boolean
           coefficient?: number
+          company_id: string
           country_code: string
           created_at?: string
           id?: string
@@ -2535,6 +2647,7 @@ export type Database = {
         Update: {
           actif?: boolean
           coefficient?: number
+          company_id?: string
           country_code?: string
           created_at?: string
           id?: string
@@ -2543,6 +2656,13 @@ export type Database = {
           zone_code?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tarif_voyage_zones_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tarif_voyage_zones_country_code_fkey"
             columns: ["country_code"]

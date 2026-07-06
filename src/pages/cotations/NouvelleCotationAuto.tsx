@@ -11,21 +11,14 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { coter, defaultOverrides, type AutoInput, type AutoOverrides } from "@/lib/tarifs/moteurAuto";
+import { defaultOverrides, type AutoInput, type AutoOverrides } from "@/lib/tarifs/moteurAuto";
+import { useAutoTarifBundle, coterDB } from "@/lib/tarifs/bundleAuto";
 import { toast } from "sonner";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, AlertTriangle } from "lucide-react";
 
 interface Props { basePath: string }
 
 type Company = { id: string; name: string; code: string };
-
-function detectCompagnie(code: string): "NSIA" | "AFRI" | "GMC" | "AUTRE" {
-  const c = code.toUpperCase();
-  if (c.includes("NSIA")) return "NSIA";
-  if (c.includes("AFRI")) return "AFRI";
-  if (c.includes("GMC")) return "GMC";
-  return "AUTRE";
-}
 
 const initialInput: AutoInput = {
   compagnie: "NSIA",
@@ -64,6 +57,7 @@ export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Pr
   const [input, setInput] = useState<AutoInput>(initialInput);
   const [overrides, setOverrides] = useState<AutoOverrides>(defaultOverrides());
   const [saving, setSaving] = useState(false);
+  const bundleQ = useAutoTarifBundle(companyId || null, "CM");
 
   useEffect(() => {
     supabase.from("companies").select("id,name,code").order("name").then(({ data }) => {
@@ -74,16 +68,22 @@ export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Pr
     });
   }, [primaryCompanyId]);
 
-  useEffect(() => {
-    const c = companies.find((x) => x.id === companyId);
-    if (c) setInput((prev) => ({ ...prev, compagnie: detectCompagnie(c.code) }));
-  }, [companyId, companies]);
-
-  const result = useMemo(() => coter(input, overrides), [input, overrides]);
+  const result = useMemo(() => {
+    if (!bundleQ.data) return null;
+    try {
+      return coterDB(input, overrides, bundleQ.data);
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : String(e) } as const;
+    }
+  }, [input, overrides, bundleQ.data]);
 
   const save = async () => {
     if (!user || !companyId) {
       toast.error("Sélectionnez une compagnie");
+      return;
+    }
+    if (!result || "error" in result) {
+      toast.error("Cotation invalide — vérifiez les tarifs configurés");
       return;
     }
     if (!client || !client.full_name.trim()) {
@@ -121,7 +121,7 @@ export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Pr
     <div className="space-y-6">
       <PageHeader
         title="Nouvelle cotation Auto"
-        description="Calcul automatique unifié — NSIA / GMC / AFRI. Mode manuel disponible."
+        description="Calcul basé sur les tarifs configurés en base (par compagnie × pays × date). Mode manuel disponible."
       />
 
       <Card className="p-6 space-y-4">
@@ -146,8 +146,27 @@ export default function NouvelleCotationAuto({ basePath = "/agent" }: Partial<Pr
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
         <VehiculeForm value={input} onChange={setInput} clientId={client?.id ?? null} companyId={companyId || null} />
         <div className="xl:sticky xl:top-4 space-y-4">
-          <DecomptePanel result={result} overrides={overrides} onChange={setOverrides} />
-          <Button onClick={save} disabled={saving} size="lg" className="w-full">
+          {bundleQ.isLoading && (
+            <div className="border rounded-lg p-6 text-sm text-muted-foreground flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" /> Chargement des tarifs de la compagnie…
+            </div>
+          )}
+          {bundleQ.error && (
+            <div className="border rounded-lg p-4 text-sm text-destructive flex items-start gap-2">
+              <AlertTriangle className="h-4 w-4 mt-0.5" />
+              <span>Impossible de charger les tarifs : {(bundleQ.error as Error).message}</span>
+            </div>
+          )}
+          {result && "error" in result && (
+            <div className="border rounded-lg p-4 text-sm text-destructive flex items-start gap-2">
+              <AlertTriangle className="h-4 w-4 mt-0.5" />
+              <span>{result.error}. Renseignez les tarifs manquants dans <b>Configuration → Tarifs</b>.</span>
+            </div>
+          )}
+          {result && !("error" in result) && (
+            <DecomptePanel result={result} overrides={overrides} onChange={setOverrides} />
+          )}
+          <Button onClick={save} disabled={saving || !result || "error" in (result ?? {})} size="lg" className="w-full">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             <span className="ml-2">Enregistrer la cotation</span>
           </Button>

@@ -411,31 +411,60 @@ function PaysPanel() {
 // ────────────────────────────────────────────────────────────
 export default function ParametresConfig() {
   const [country, setCountry] = useState<string>(() => localStorage.getItem("cfg_country") ?? "CM");
+  const [companyId, setCompanyId] = useState<string>(() => localStorage.getItem("cfg_company") ?? "");
   const { data: pays = [] } = useQuery({
     queryKey: ["pays_cima_active"],
     queryFn: async () => (await supabase.from("pays_cima").select("code,nom").eq("actif", true).order("nom")).data ?? [],
   });
+  const { data: companies = [] } = useQuery({
+    queryKey: ["companies_all"],
+    queryFn: async () => (await supabase.from("companies").select("id,name,code").order("name")).data ?? [],
+  });
+
+  // Sélectionne la première compagnie par défaut
+  if (!companyId && companies.length > 0) {
+    const first = (companies[0] as any).id;
+    setCompanyId(first);
+    localStorage.setItem("cfg_company", first);
+  }
 
   const setCtry = (c: string) => { setCountry(c); localStorage.setItem("cfg_country", c); };
+  const setCmp = (c: string) => { setCompanyId(c); localStorage.setItem("cfg_company", c); };
+  const withCompany = (extra?: Record<string, any>) => ({ company_id: companyId, ...(extra ?? {}) });
 
   return (
     <div className="space-y-6">
       <PageHeader title="Configuration" description="Tarifs, référentiels, partenaires et paramètres système — modifiable sans redéploiement." />
 
-      <Card className="p-4 flex items-center gap-3">
-        <Label>Pays</Label>
-        <Select value={country} onValueChange={setCtry}>
-          <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
-          <SelectContent>{pays.map((p: any) => <SelectItem key={p.code} value={p.code}>{p.nom} ({p.code})</SelectItem>)}</SelectContent>
-        </Select>
+      <Card className="p-4 flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-2">
+          <Label>Compagnie</Label>
+          <Select value={companyId} onValueChange={setCmp}>
+            <SelectTrigger className="w-64"><SelectValue placeholder="Sélectionner…" /></SelectTrigger>
+            <SelectContent>{companies.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name} ({c.code})</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2">
+          <Label>Pays</Label>
+          <Select value={country} onValueChange={setCtry}>
+            <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
+            <SelectContent>{pays.map((p: any) => <SelectItem key={p.code} value={p.code}>{p.nom} ({p.code})</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+        <Badge variant="outline" className="ml-auto">Chaque compagnie a sa propre grille</Badge>
       </Card>
+
+      {!companyId && (
+        <Card className="p-6 text-center text-muted-foreground text-sm">Sélectionnez une compagnie pour éditer ses tarifs.</Card>
+      )}
+      {companyId && (
 
       <Tabs defaultValue="tarifs">
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="tarifs">Tarifs Auto</TabsTrigger>
           <TabsTrigger value="voyage">Voyage</TabsTrigger>
           <TabsTrigger value="vie">Vie</TabsTrigger>
-          <TabsTrigger value="gmc">GMC</TabsTrigger>
+          <TabsTrigger value="sante">Santé</TabsTrigger>
           <TabsTrigger value="partenaires">Partenaires</TabsTrigger>
           <TabsTrigger value="pays">Pays</TabsTrigger>
           <TabsTrigger value="systeme">Système</TabsTrigger>
@@ -447,8 +476,8 @@ export default function ParametresConfig() {
             <TarifTable
               table="tarif_bareme_rc"
               country={country}
-              filter={{ produit: "auto" }}
-              newRowDefaults={{ produit: "auto", categorie: "cat1" }}
+              filter={{ produit: "auto", company_id: companyId }}
+              newRowDefaults={withCompany({ produit: "auto", categorie: "cat1" })}
               columns={[
                 { key: "categorie", label: "Cat." },
                 { key: "cv_min", label: "CV min", type: "number" },
@@ -465,8 +494,8 @@ export default function ParametresConfig() {
             <TarifTable
               table="tarif_taux_garantie"
               country={country}
-              filter={{ produit: "auto" }}
-              newRowDefaults={{ produit: "auto", base_calcul: "valeur_venale" }}
+              filter={{ produit: "auto", company_id: companyId }}
+              newRowDefaults={withCompany({ produit: "auto", base_calcul: "valeur_venale" })}
               columns={[
                 { key: "categorie", label: "Cat." },
                 { key: "code_garantie", label: "Code" },
@@ -481,6 +510,8 @@ export default function ParametresConfig() {
             <TarifTable
               table="tarif_dta_vignette"
               country={country}
+              filter={{ company_id: companyId }}
+              newRowDefaults={withCompany()}
               columns={[
                 { key: "usage", label: "Usage", type: "select", options: ["transport_commun", "autre"] },
                 { key: "cv_min", label: "CV min", type: "number" },
@@ -494,6 +525,8 @@ export default function ParametresConfig() {
             <TarifTable
               table="tarif_accessoires"
               country={country}
+              filter={{ company_id: companyId }}
+              newRowDefaults={withCompany()}
               columns={[
                 { key: "prime_nette_min", label: "Prime min", type: "number" },
                 { key: "prime_nette_max", label: "Prime max", type: "number" },
@@ -506,6 +539,8 @@ export default function ParametresConfig() {
             <TarifTable
               table="tarif_options_ipt"
               country={country}
+              filter={{ company_id: companyId }}
+              newRowDefaults={withCompany()}
               columns={[
                 { key: "code", label: "Code" },
                 { key: "label", label: "Libellé" },
@@ -521,6 +556,8 @@ export default function ParametresConfig() {
             <TarifTable
               table="tarif_frais_fixes"
               country={country}
+              filter={{ company_id: companyId }}
+              newRowDefaults={withCompany()}
               columns={[
                 { key: "code", label: "Code" },
                 { key: "label", label: "Libellé" },
@@ -533,6 +570,8 @@ export default function ParametresConfig() {
             <TarifTable
               table="tarif_reductions"
               country={country}
+              filter={{ company_id: companyId }}
+              newRowDefaults={withCompany()}
               columns={[
                 { key: "code", label: "Code" },
                 { key: "label", label: "Libellé" },
@@ -549,6 +588,8 @@ export default function ParametresConfig() {
             <TarifTable
               table="tarif_voyage_zones"
               country={country}
+              filter={{ company_id: companyId }}
+              newRowDefaults={withCompany()}
               columns={[
                 { key: "zone_code", label: "Code zone" },
                 { key: "label", label: "Libellé" },
@@ -561,6 +602,8 @@ export default function ParametresConfig() {
             <TarifTable
               table="tarif_voyage_bareme"
               country={country}
+              filter={{ company_id: companyId }}
+              newRowDefaults={withCompany()}
               columns={[
                 { key: "zone_code", label: "Zone" },
                 { key: "duree_min", label: "Durée min", type: "number" },
@@ -579,6 +622,8 @@ export default function ParametresConfig() {
             <TarifTable
               table="tarif_vie_bareme"
               country={country}
+              filter={{ company_id: companyId }}
+              newRowDefaults={withCompany()}
               columns={[
                 { key: "age_min", label: "Âge min", type: "number" },
                 { key: "age_max", label: "Âge max", type: "number" },
@@ -591,6 +636,8 @@ export default function ParametresConfig() {
             <TarifTable
               table="tarif_vie_periodicites"
               country={country}
+              filter={{ company_id: companyId }}
+              newRowDefaults={withCompany()}
               columns={[
                 { key: "code", label: "Code" },
                 { key: "label", label: "Libellé" },
@@ -601,12 +648,14 @@ export default function ParametresConfig() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="gmc" className="space-y-6">
+        <TabsContent value="sante" className="space-y-6">
           <Card className="p-4">
-            <h3 className="font-display font-semibold mb-3">Barème GMC (santé)</h3>
+            <h3 className="font-display font-semibold mb-3">Barème Santé (mutuelle GMC)</h3>
             <TarifTable
               table="tarif_gmc_bareme"
               country={country}
+              filter={{ company_id: companyId }}
+              newRowDefaults={withCompany()}
               columns={[
                 { key: "formule", label: "Formule", type: "select", options: ["essentielle", "confort", "premium"] },
                 { key: "age_min", label: "Âge min", type: "number" },
@@ -623,6 +672,7 @@ export default function ParametresConfig() {
         <TabsContent value="pays"><PaysPanel /></TabsContent>
         <TabsContent value="systeme"><SettingsPanel /></TabsContent>
       </Tabs>
+      )}
     </div>
   );
 }
